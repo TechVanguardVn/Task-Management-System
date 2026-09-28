@@ -12,6 +12,7 @@ describe('AuthService', () => {
     user: {
       findUnique: jest.fn(),
       create: jest.fn(),
+      update: jest.fn(),
     },
   };
 
@@ -48,6 +49,7 @@ describe('AuthService', () => {
         name: 'Huy',
         email: 'huy@test.com',
         password: 'hashed-password',
+        tokenVersion: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -92,6 +94,7 @@ describe('AuthService', () => {
         name: 'Existing User',
         email: 'huy@test.com',
         password: 'hashed-password',
+        tokenVersion: 0,
       });
 
       await expect(
@@ -105,6 +108,7 @@ describe('AuthService', () => {
       expect(prismaMock.user.create).not.toHaveBeenCalled();
     });
   });
+
   describe('login', () => {
     it('should login successfully with valid credentials', async () => {
       const hashedPassword = await bcrypt.hash('12345678', 12);
@@ -114,6 +118,7 @@ describe('AuthService', () => {
         name: 'Huy',
         email: 'huy@test.com',
         password: hashedPassword,
+        tokenVersion: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -138,6 +143,7 @@ describe('AuthService', () => {
       expect(jwtMock.signAsync).toHaveBeenCalledWith({
         sub: 1,
         email: 'huy@test.com',
+        tokenVersion: 0,
       });
     });
 
@@ -162,6 +168,7 @@ describe('AuthService', () => {
         name: 'Huy',
         email: 'huy@test.com',
         password: hashedPassword,
+        tokenVersion: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -174,6 +181,32 @@ describe('AuthService', () => {
       ).rejects.toThrow('Invalid email or password');
 
       expect(jwtMock.signAsync).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('logout', () => {
+    it('should invalidate the user token by incrementing tokenVersion', async () => {
+      prismaMock.user.update.mockResolvedValue({
+        id: 1,
+        tokenVersion: 1,
+      });
+
+      const result = await service.logout(1);
+
+      expect(result).toEqual({
+        message: 'Logout successful',
+      });
+
+      expect(prismaMock.user.update).toHaveBeenCalledWith({
+        where: {
+          id: 1,
+        },
+        data: {
+          tokenVersion: {
+            increment: 1,
+          },
+        },
+      });
     });
   });
 });
