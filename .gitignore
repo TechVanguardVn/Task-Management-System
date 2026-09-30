@@ -1,0 +1,40 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Node / frontend
+node_modules/
+client/node_modules/
+client/dist/
+client/.vite/
+!client/.env.example
+
+
+# PHP / Laravel backend
+server/vendor/
+server/.env
+server/.env.*
+!server/.env.example
+server/storage/*.key
+server/storage/logs/
+server/storage/framework/cache/
+server/storage/framework/sessions/
+server/storage/framework/views/
+server/bootstrap/cache/
+server/public/build/
+server/public/hot
+server/public/storage
+server/.phpunit.result.cache
+server/.phpunit.cache
+
+# Docker / local runtime
+.docker/
+*.log
+*.pid
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

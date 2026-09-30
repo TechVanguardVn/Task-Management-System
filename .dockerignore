@@ -1,0 +1,9 @@
+**/node_modules
+**/vendor
+.git
+.gitignore
+.env
+.env.*
+Dockerfile
+**/dist
+**/.DS_Store

@@ -1,0 +1,64 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: mysql-prod
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-tm_system}
+      MYSQL_USER: ${MYSQL_USER:-tm_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-12345678@@}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  backend:
+    image: ${DOCKERHUB_USERNAME:-yourname}/task-management-backend:latest
+    container_name: task-management-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      APP_NAME: "Task Management"
+      APP_ENV: production
+      APP_KEY: ${APP_KEY}
+      APP_DEBUG: false
+      APP_URL: https://api.blueskydev04.id.vn
+      L5_SWAGGER_CONST_HOST: https://api.blueskydev04.id.vn/api
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${MYSQL_DATABASE:-tm_system}
+      DB_USERNAME: ${MYSQL_USER:-tm_user}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-12345678@@}
+      SESSION_DRIVER: file
+      CACHE_STORE: file
+      QUEUE_CONNECTION: sync
+    ports:
+      - "127.0.0.1:8000:8000"
+    command: >
+      sh -c "php artisan migrate --force &&
+      php artisan config:cache &&
+      php artisan route:cache &&
+      php artisan l5-swagger:generate &&
+      php artisan serve --host=0.0.0.0 --port=8000"
+
+  frontend:
+    image: ${DOCKERHUB_USERNAME:-yourname}/task-management-frontend:latest
+    container_name: task-management-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:3000:80"
+
+volumes:
+  mysql_data:
