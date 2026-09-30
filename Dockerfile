@@ -1,0 +1,67 @@
+# syntax=docker/dockerfile:1
+#
+# Three stages: install deps with bun (this repo's package manager), build with
+# bun, then run the standalone Next.js output on plain node — the runtime image
+# never needs bun or the source tree, with one deliberate exception in the
+# runner stage below: an isolated drizzle-kit CLI, needed so the container can
+# migrate itself on boot (see CMD at the bottom — deliberately not a PaaS
+# pre-deploy hook, which can be unreliable at actually targeting the new
+# image on a Docker Compose deploy; a container that migrates itself has
+# nowhere else to point at and no such race).
+#
+FROM oven/bun:1-alpine AS deps
+WORKDIR /app
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
+
+FROM oven/bun:1-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+# Values only needed to satisfy module-level env checks during the build
+# (db/index.ts throws at import time if DATABASE_URL is unset); the real
+# values are injected at container start and nothing here is baked into the
+# image.
+ENV DATABASE_URL=postgresql://stackboard:stackboard@localhost:5432/stackboard \
+    SESSION_SECRET=build-time-placeholder-not-used-at-runtime \
+    APP_URL=http://localhost:3000
+RUN bun run build
+
+# A self-contained drizzle-kit toolkit — its own node_modules, its own copy of
+# the schema/migrations — isolated from the app's own node_modules (which
+# Next's standalone tracing never bundled drizzle-kit into, since it's a
+# devDependency). Kept as its own package.json/lockfile so it never touches
+# the app's runtime deps. Built here (this stage still has bun) and only the
+# resulting directory is copied into the node-based runner below.
+RUN mkdir -p /drizzle-cli/db && \
+    cp db/schema.ts /drizzle-cli/db/ && \
+    cp -r db/migrations /drizzle-cli/db/ && \
+    cp drizzle.config.ts /drizzle-cli/ && \
+    cd /drizzle-cli && echo '{}' >package.json && \
+    bun add drizzle-kit@^0.31.10 drizzle-orm@^0.45.2 postgres@^3.4.9 dotenv@^17.4.2
+
+FROM node:22-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# /boards/changelog reads this at request time (force-dynamic), so Next's
+# standalone output tracing never picks it up — without this copy the route
+# throws ENOENT in the container.
+COPY --from=builder /app/CHANGELOG.md ./CHANGELOG.md
+
+# The isolated drizzle-kit toolkit built in the builder stage above — run
+# from CMD on every boot, before the server starts (see bottom of this file).
+COPY --from=builder --chown=nextjs:nodejs /drizzle-cli /drizzle-cli
+
+USER nextjs
+EXPOSE 3000
+ENV PORT=3000 HOSTNAME=0.0.0.0
+# Migrate before serving: a container that starts accepting traffic (and
+# passing its healthcheck) against an unmigrated database means every page
+# querying the DB 500s until something runs the migration — which is exactly
+# what a separate, easy-to-forget Pre-Deployment Command risks.
+CMD ["sh", "-c", "cd /drizzle-cli && node node_modules/.bin/drizzle-kit migrate && cd /app && exec node server.js"]

@@ -1,0 +1,14 @@
+node_modules
+.next
+.git
+var
+test-results
+playwright-report
+*.log
+.env
+.env.*
+!.env.example
+website
+docs
+.omc
+.claude

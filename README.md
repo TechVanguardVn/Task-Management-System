@@ -1,90 +1,209 @@
-# Đề bài tuyển dụng Intern: Task Management System
+# Taskflow - Task Management System
 
-Mini Project · Backend / Fullstack Developer · Thời gian: 2–3 ngày
+A modern, responsive Task Management System built with **Next.js App Router**, **TypeScript**, **PostgreSQL**, **Drizzle ORM**, **Tailwind CSS**, and **Docker Compose**.
 
-## Quy trình làm bài 
+Designed according to the requirements in [`require_task.md`](require_task.md).
 
-Quy trình làm bài: 
-- Fork repo về sau đó làm bài trên repo đó
-- Sau khi làm bài xong tạo Pull request vào Repo gốc
-- Gửi link PR và mô tả lại bài làm để nộp bài
+> **Demo Video**: (https://drive.google.com/file/d/1qGYkyF_kALieTyetiM1IT6zUPqZthL4D/view?usp=sharing)
 
-![Kanban Project Management Dashboard UI for SaaS Platform by Creliq UX/UI Design Agency on Dribbble](https://raw.githubusercontent.com/TechVanguardVn/Task-Management-System/refs/heads/main/images/demo.jpeg)
+## Feature Handover Checklist
 
-## 1. Mục tiêu dự án
+### A. Mandatory Requirements (MVP) - 100% Completed
 
-Xây dựng một ứng dụng quản lý công việc cá nhân hoặc nhóm nhỏ, cho phép người dùng tạo, cập nhật, theo dõi tiến độ và quản lý các công việc của mình.
+| Feature                            | Requirement Details                                                                                                                                                                                                                                                                                                                                                                  |      Status      |
+| :--------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------: |
+| **1. Account Management**          | • User registration (`/signup`)<br>• Secure login & logout (`/login`, User Menu)<br>• Passwords securely hashed with `scrypt` using a random 16-byte salt<br>• Data isolation authorization: Users can only access data they own                                                                                                                                                     | ✅ **Completed** |
+| **2. Task Management (Task CRUD)** | • Create tasks (`+ Add task` inline or modal form)<br>• View task details in modal/drawer or list view<br>• Edit tasks: Title, description, status, priority, due date<br>• Permanently delete tasks (`Delete task`)<br>• All 5 fields supported: Title, Description, Status, Priority, Due Date<br>• Exactly 3 statuses: `TODO` (To do), `IN_PROGRESS` (In progress), `DONE` (Done) | ✅ **Completed** |
+| **3. Search & Filter**             | • Search by task title and description<br>• Filter by status and priority (`low`, `medium`, `high`, `urgent`)<br>• **Pagination**: Integrated on both the Search page (`/boards/search`) and List View                                                                                                                                                                               | ✅ **Completed** |
+| **4. Dashboard**                   | • **Total Tasks** statistics across 4 prominent KPI cards<br>• Task count by status: **To Do**, **In Progress**, **Done**<br>• **Upcoming Tasks** list showing due dates, priority, and direct links to tasks                                                                                                                                                                        | ✅ **Completed** |
 
-Ứng viên được tự chọn công nghệ phù hợp với vị trí ứng tuyển. Dự án cần có source code, database, tài liệu hướng dẫn chạy và API nếu có Backend.
+### B. Bonus Features - 100% Completed
 
-## 2. Yêu cầu chức năng
+- [x] **Swagger / OpenAPI Documentation**: Interactive OpenAPI 3.0 API documentation at `/api-docs` with Swagger UI, allowing direct testing ("Try it out") of all REST APIs (Auth, Task CRUD, Search, Filter, Pagination, Dashboard).
+- [x] **Kanban Board Interface**: Smooth Drag-and-Drop task cards between status columns (`To Do` ➔ `In Progress` ➔ `Done`) using `@dnd-kit`.
+- [x] **Flexible Views**: Toggle between **Kanban Board** and paginated **List View**.
+- [x] **Docker Compose**: `docker-compose.yml` to run PostgreSQL locally and `docker-compose.prod.yml` to package and run the entire application (Next.js + Postgres) with a single command.
+- [x] **Automated Testing (Unit Tests)**: 11 test suites, 81 automated tests with Vitest (`npm run test`) passing 100%.
+- [x] **Database Migration & Seed**: Automated schema creation, foreign keys, and complete sample seed data (`npm run db:migrate`, `npm run db:seed`).
 
-### A. Chức năng bắt buộc (MVP)
+### C. Future Enhancements
 
-1. Quản lý tài khoản
+- [ ] Real-time push notifications via WebSockets / Server-Sent Events.
 
-* Đăng ký, đăng nhập, đăng xuất.
+---
 
-* Mật khẩu phải được mã hóa an toàn.
+## 🛠 Tech Stack
 
-* Người dùng chỉ được truy cập dữ liệu của mình.
+- **Framework**: [Next.js 16 (App Router)](https://nextjs.org/) + React 19
+- **Language**: TypeScript 5
+- **Styling**: Tailwind CSS v4 (Taskflow warm theme) + Lucide Icons + GSAP Animations
+- **Database**: PostgreSQL 16
+- **ORM & Migrations**: [Drizzle ORM](https://orm.drizzle.team/) & Drizzle Kit
+- **Drag & Drop (DnD)**: `@dnd-kit/core` & `@dnd-kit/sortable`
+- **Authentication & Security**: Node.js `crypto` (`scrypt`, SHA-256) + HTTP-only Cookie Sessions
+- **Validation**: Zod
+- **Testing**: Vitest + Playwright
+- **Containerization**: Docker & Docker Compose
 
-2. Quản lý công việc (Task CRUD)
+---
 
-* Tạo, xem, sửa, xóa công việc.
+## Installation & Setup Guide
 
-* Mỗi task có tiêu đề, mô tả, trạng thái, mức ưu tiên, hạn hoàn thành.
+### Prerequisites
 
-* Trạng thái: `TODO`, `IN_PROGRESS`, `DONE`.
+- **Node.js**: Version 20.x or higher (or Bun)
+- **Docker Desktop**: For running PostgreSQL locally
 
-3. Tìm kiếm và lọc
+---
 
-* Tìm kiếm theo tiêu đề.
+### Method 1: Local Development with Node.js + Docker DB (Recommended)
 
-* Lọc theo trạng thái và mức ưu tiên.
+#### 1. Clone repository & install dependencies:
 
-* Có phân trang nếu dữ liệu lớn.
+```bash
+npm install
+```
 
-4. Dashboard
+#### 2. Configure environment variables:
 
-* Tổng số task.
+Create a `.env` file from `.env.example`:
 
-* Số task đã hoàn thành, đang thực hiện và chưa bắt đầu.
+```bash
+# Windows PowerShell:
+Copy-Item .env.example .env
 
-* Hiển thị danh sách công việc sắp đến hạn.
+# Linux / macOS:
+cp .env.example .env
+```
 
-### B. Chức năng cộng điểm (không bắt buộc)
+#### 3. Start PostgreSQL Database:
 
-* Giao diện Kanban, kéo thả task giữa các trạng thái.
+```bash
+docker compose up -d db
+```
 
-* Docker Compose để khởi chạy ứng dụng.
+#### 4. Run Migrations & Seed Sample Data:
 
-* Unit test hoặc integration test.
+```bash
+# Run migrations to create tables:
+npm run db:migrate
 
-* Swagger/OpenAPI cho tài liệu API.
+# Seed sample data (demo user, project board, 3 status columns, 4 sample tasks):
+npm run db:seed
+```
 
-* CI pipeline chạy test khi push code.
+#### 5. Start the Next.js development server:
 
-* Deploy demo lên server hoặc nền tảng cloud.
+```bash
+npm run dev
+```
 
-## 3. Công nghệ đề xuất
+Open your browser and navigate to: **[http://localhost:3000](http://localhost:3000)**
 
-- Ứng viên được thỏa sức chọn lựa công nghệ
-- Gợi ý công nghệ có thể dùng ví dụ: nodejs, PHP/Laravel,...
+---
 
-## 4. Thiết kế database tham khảo
+### Demo Account
 
-Ứng viên tự thiết kế sao cho đáp ứng nhu cầu đề bài
-Yêu cầu: có migration tạo bảng, khóa ngoại và các ràng buộc dữ liệu phù hợp.
+After running `npm run db:seed`, you can immediately sign in with:
 
-## 5. Sản phẩm ứng viên phải bàn giao
+- **Email**: `alice@example.com`
+- **Password**: `password123`
 
-### Checklist bàn giao
+_(Or register a new account at `/signup`)._
 
-- Pull Request tạo vào repo gốc
-- README: hướng dẫn cài đặt và chạy dự án
-- File .env.example, không chứa secret thật
-- Database migration và dữ liệu mẫu/seed
-- API documentation hoặc hướng dẫn sử dụng
-- Danh sách chức năng đã hoàn thành và chức năng chưa hoàn thành
-- Video demo 3–5 phút hoặc buổi demo trực tiếp
+---
+
+### Method 2: Run with Docker Compose (Production Build)
+
+If you have Docker Desktop installed, you can launch the complete full-stack system (App + Database) with a single command:
+
+```bash
+docker compose -f docker-compose.prod.yml up --build
+```
+
+The application will be compiled and accessible at: **[http://localhost:3000](http://localhost:3000)**
+
+---
+
+## Code Quality & Verification Commands
+
+The project strictly complies with pre-delivery verification standards:
+
+```bash
+# Run ESLint check for syntax and style:
+npm run lint
+
+# TypeScript type check:
+npm run typecheck
+
+# Run all automated Unit Tests:
+npm run test
+
+# Build production bundle:
+npm run build
+```
+
+---
+
+## API Documentation (Swagger / OpenAPI Documentation)
+
+The system provides comprehensive, interactive API documentation adhering to the **OpenAPI 3.0** standard:
+
+- **Swagger UI Interactive Explorer**: Accessible at `http://localhost:3000/api-docs`
+- **OpenAPI 3.0 JSON Specification**: Accessible at `http://localhost:3000/api/openapi.json`
+
+### REST API Endpoints with "Try it out" support:
+
+| Module        | Method   | Endpoint             | Description                                                                          |
+| :------------ | :------- | :------------------- | :----------------------------------------------------------------------------------- |
+| **Auth**      | `POST`   | `/api/auth/register` | Register a new user account                                                          |
+|               | `POST`   | `/api/auth/login`    | Sign in to system (creates HTTP-only session cookie)                                 |
+|               | `POST`   | `/api/auth/logout`   | Sign out current user                                                                |
+|               | `GET`    | `/api/auth/me`       | Get current authenticated user profile                                               |
+| **Tasks**     | `GET`    | `/api/tasks`         | Get task list (supports `q`, `status`, `priority`, `page`, `limit`)                  |
+|               | `POST`   | `/api/tasks`         | Create a new task (supports `title`, `description`, `status`, `priority`, `dueDate`) |
+|               | `GET`    | `/api/tasks/{id}`    | Get task details by ID                                                               |
+|               | `PATCH`  | `/api/tasks/{id}`    | Update task details (title, description, status, priority, due date)                 |
+|               | `DELETE` | `/api/tasks/{id}`    | Permanently delete a task                                                            |
+| **Dashboard** | `GET`    | `/api/dashboard`     | Overview statistics for 3 task statuses and upcoming tasks                           |
+| **System**    | `GET`    | `/api/health`        | Healthcheck probe for Server & Database status                                       |
+
+---
+
+## Project Structure
+
+```text
+stackboard-main/
+├── app/                        # Next.js App Router (Routes & Server Components)
+│   ├── (auth)/                 # Authentication pages (/login, /signup)
+│   ├── api/                    # REST API Route Handlers (Auth, Tasks, Dashboard)
+│   ├── api-docs/               # Interactive Swagger UI (/api-docs)
+│   ├── boards/                 # Dashboard overview (/boards)
+│   │   ├── [boardId]/          # Kanban board & List view for a project
+│   │   │   ├── cards/[cardId]/ # Task detail modal & edit / delete modal
+│   │   │   ├── board-board.tsx # Drag-and-drop Kanban board component
+│   │   │   └── board-list.tsx  # Paginated list view component
+│   │   └── search/             # Paginated search & filter page
+│   └── globals.css             # Color tokens & theme styling
+├── db/                         # Database schema & Migrations
+│   ├── schema.ts               # Database table schemas (users, boards, columns, cards, sessions)
+│   ├── migrations/             # SQL migrations auto-generated by Drizzle
+│   └── seed.ts                 # Initial demo seed script
+├── lib/
+│   ├── actions/                # Next.js Server Actions (task CRUD, auth handlers)
+│   ├── auth/                   # Session management & password hashing
+│   ├── domain/                 # Pure business logic with unit tests (tasks, due, health...)
+│   ├── openapi.ts              # OpenAPI 3.0 specification definition
+│   └── queries/                # Server-only database read queries
+├── docker-compose.yml          # Docker Compose for local PostgreSQL dev
+├── docker-compose.prod.yml     # Docker Compose full-stack production build
+├── .env.example                # Sample environment configuration file
+└── require_task.md             # Task requirements and evaluation criteria
+```
+
+---
+
+## License & Author
+
+This project was built for an Intern / Junior Fullstack Developer assessment.
+For any questions or feedback, please open a Pull Request or contact Nguyen Thi Hong Diep (HongDiep18).
