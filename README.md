@@ -4,9 +4,7 @@ A modern, responsive Task Management System built with **Next.js App Router**, *
 
 Designed according to the requirements in [`require_task.md`](require_task.md).
 
-> **Demo Video**: [Watch the walkthrough demo video](https://drive.google.com/file/d/1qGYkyF_kALieTyetiM1IT6zUPqZthL4D/view?usp=sharing)
-
----
+> **Demo Video**: (https://drive.google.com/file/d/1qGYkyF_kALieTyetiM1IT6zUPqZthL4D/view?usp=sharing)
 
 ## Feature Handover Checklist
 
