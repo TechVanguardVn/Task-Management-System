@@ -1,0 +1,532 @@
+@import 'tailwindcss';
+
+:root {
+    /* "Blueprint" design system (DESIGN.md): one blue — #1868db — plus a
+       neutral gray scale from white to near-black. Token *names* are kept
+       stable across reskins so component code doesn't change — only the
+       values move. */
+    --font-stack:
+        var(--font-inter), 'SF Pro Display', -apple-system, BlinkMacSystemFont,
+        'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+    --color-ink: #171717; /* primary text — near-black */
+    --color-carbon: #171717;
+    --color-ink-secondary: #404040;
+    --color-midnight: #ff6b00; /* Taskflow brand orange */
+    --color-midnight-hover: #ea580c;
+    --color-midnight-pressed: #c2410c;
+    --color-primary-soft: #fb923c;
+    --color-smoke: #6b6966; /* secondary text */
+    --color-fog: #949089; /* helper text, captions */
+    --color-ash: #949089;
+    --color-mist: #eceae5; /* hairline borders */
+    --color-border-strong: #ded9cf; /* form input borders */
+    --color-paper: #ffffff; /* raised surface */
+    --color-snow: #f8f7f4; /* warm cream page background from design */
+    --color-cream: #f4f3ee; /* neutral well */
+    --color-sunken: #f5f4f0; /* column wells */
+    --color-concrete: #ded9cf;
+    --color-electric-blue: #ff6b00; /* brand orange alias */
+    --color-electric-blue-tint: #fff5ed; /* pale orange wash */
+    --color-primary-subdued: #fed7aa; /* soft tag fill */
+    /* Muted avatar skin */
+    --color-avatar-muted: #fed7aa;
+    --color-avatar-muted-ink: #9a3412;
+    --color-brand-dark: #1c1917;
+    --color-ruby: #c2410c;
+    --color-brand-magenta: #fb923c;
+    --color-board-blue: #fb923c;
+
+    /* Label palette */
+    --color-label-blue: #3b82f6;
+    --color-label-blue-subtle: #eff6ff;
+    --color-label-purple: #8b5cf6;
+    --color-label-purple-subtle: #f5f3ff;
+    --color-label-green: #10b981;
+    --color-label-green-subtle: #ecfdf5;
+    --color-label-red: #ef4444;
+    --color-label-red-subtle: #fef2f2;
+    --color-label-yellow: #f59e0b;
+    --color-label-yellow-subtle: #fffbeb;
+    --color-label-orange: #ff6b00;
+    --color-label-orange-subtle: #fff5ed;
+
+    /* Accent aliases */
+    --color-iris: var(--color-label-purple);
+    --color-magenta: var(--color-label-orange);
+    --color-leaf: #10b981;
+    --color-coral: #ef4444;
+    --color-coral-solid: #ef4444;
+    --color-due-soon: #78716c;
+    --color-success: #10b981;
+    --color-ice: var(--color-electric-blue-tint);
+    --color-lavender: var(--color-label-purple-subtle);
+    --color-blush: #fef2f2;
+
+    --background: var(--color-snow);
+    --foreground: var(--color-ink);
+
+    /* Rounded Taskflow scale */
+    --radius-tags: 9999px;
+    --radius-inputs: 9999px;
+    --radius-cards: 20px;
+    --radius-buttons: 9999px;
+    --radius-largecards: 24px;
+    --radius-sheet: 24px;
+
+    /* Depth comes from hairline borders; shadows stay minimal and neutral */
+    --shadow-subtle: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;
+    --shadow-elevated:
+        rgba(0, 0, 0, 0.05) 0px 1px 2px 0px, rgba(0, 0, 0, 0.03) 0px 0px 1px 0px;
+    --shadow-dragging:
+        rgba(0, 0, 0, 0.12) 0px 8px 24px 0px,
+        rgba(0, 0, 0, 0.06) 0px 2px 6px 0px;
+    --shadow-sheet: rgba(0, 0, 0, 0.16) 0px 16px 40px 0px;
+    --shadow-button: none;
+
+    /* Shared control geometry — buttons and inputs are the same box */
+    --control-h: 36px;
+    --control-h-sm: 28px;
+}
+
+@theme inline {
+    --color-ink: var(--color-ink);
+    --color-carbon: var(--color-carbon);
+    --color-midnight: var(--color-midnight);
+    --color-smoke: var(--color-smoke);
+    --color-fog: var(--color-fog);
+    --color-ash: var(--color-ash);
+    --color-mist: var(--color-mist);
+    --color-paper: var(--color-paper);
+    --color-snow: var(--color-snow);
+    --color-cream: var(--color-cream);
+    --color-concrete: var(--color-concrete);
+    --color-electric-blue: var(--color-electric-blue);
+    --color-iris: var(--color-iris);
+    --color-magenta: var(--color-magenta);
+    --color-leaf: var(--color-leaf);
+    --color-coral: var(--color-coral);
+    --color-ice: var(--color-ice);
+    --color-lavender: var(--color-lavender);
+    --color-blush: var(--color-blush);
+    --color-board-blue: var(--color-board-blue);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-stack);
+    --radius-tags: var(--radius-tags);
+    --radius-cards: var(--radius-cards);
+    --radius-buttons: var(--radius-buttons);
+    --radius-largecards: var(--radius-largecards);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Neutral dark track — grays, never navy. Every light token has its
+           dark value here and only here (no dark: variants in components). */
+        --background: #0f0f0f;
+        --foreground: #ededed;
+        --color-paper: #161616;
+        --color-snow: #121212;
+        --color-cream: #1a1a1a;
+        --color-sunken: #1d1d1d;
+        --color-mist: #262626;
+        --color-border-strong: #333333;
+        --color-smoke: #a3a3a3;
+        --color-fog: #8a8a8a;
+        --color-ink: #ededed;
+        --color-ink-secondary: #c7c7c7;
+        --color-electric-blue: #fb923c;
+        --color-electric-blue-tint: rgba(255, 107, 0, 0.16);
+        /* --color-midnight is a *surface* (primary button, member avatar),
+           always under white text — so it must stay dark enough for 4.5:1.
+           Lightening it to #3b82e0 dropped that pair to 3.85:1, so dark mode
+           keeps the brand blue and the states move the same way as in light.
+           Link/icon blue lives in --color-electric-blue, which does lighten. */
+        --color-midnight: #ff6b00;
+        --color-midnight-hover: #ea580c;
+        --color-midnight-pressed: #c2410c;
+        --color-avatar-muted: #16335c;
+        --color-avatar-muted-ink: #93bbf2;
+        --color-coral-solid: #dc2626;
+        --color-concrete: #333333;
+        --color-primary-subdued: #16335c;
+        /* Ink aliases follow --color-ink: they sit on tinted surfaces
+           (board tile headers) whose fills go deep in dark mode. */
+        --color-carbon: #ededed;
+        --color-brand-dark: #ededed;
+        --color-ash: #8a8a8a;
+        /* Blues that are dark by design lift to the readable blue */
+        --color-ruby: #4c8fe8;
+        /* Already the dark-track readable blue in light mode — restated here
+           so every token carries an explicit dark value (DESIGN.md rule). */
+        --color-primary-soft: #4c8fe8;
+        --color-brand-magenta: #4c8fe8;
+        --color-board-blue: #4c8fe8;
+
+        /* Subtle label fills flip to deep tints of the same hue so chips
+           stay readable; solids lighten to keep contrast on the dark canvas */
+        --color-label-blue-subtle: #142d52;
+        --color-label-purple-subtle: #271145;
+        --color-label-green-subtle: #14321f;
+        --color-label-red-subtle: #3f0817;
+        --color-label-yellow-subtle: #3f2f05;
+        --color-label-orange-subtle: #431f07;
+        --color-label-blue: #4c8fe8;
+        --color-label-purple: #a78bfa;
+        --color-label-green: #4ade80;
+        --color-label-red: #fb7185;
+        --color-label-yellow: #facc15;
+        --color-label-orange: #fb923c;
+
+        /* Functional states brighten for contrast on dark */
+        --color-coral: #f87171;
+        --color-blush: #3a1414;
+        --color-due-soon: #b9b9b9;
+        --color-success: #4ade80;
+        --color-leaf: #4ade80;
+
+        --shadow-subtle: rgba(0, 0, 0, 0.45) 0px 1px 2px 0px;
+        --shadow-elevated:
+            rgba(0, 0, 0, 0.45) 0px 1px 2px 0px,
+            rgba(0, 0, 0, 0.3) 0px 0px 1px 0px;
+        --shadow-dragging:
+            rgba(0, 0, 0, 0.6) 0px 8px 24px 0px,
+            rgba(0, 0, 0, 0.35) 0px 2px 6px 0px;
+        --shadow-sheet: rgba(0, 0, 0, 0.65) 0px 16px 40px 0px;
+    }
+}
+
+* {
+    border-color: var(--color-mist);
+}
+
+body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    /* Compact type is a hard product requirement — 14px body, 16px ceiling.
+       Weight 400 keeps small text crisp; hierarchy comes from 500 titles. */
+    font-size: 14px;
+    font-weight: 400;
+    /* Only the layout's <main> scrolls (app/boards/layout.tsx is h-screen).
+       Without this, trackpad momentum from that inner scroll chains to the
+       body and macOS's rubber-band overscroll reveals blank space below it. */
+    overscroll-behavior-y: none;
+}
+
+/* Every numeric cell (counts, dates, progress) uses tabular figures */
+.tabular {
+    font-feature-settings: 'tnum';
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+:focus-visible {
+    outline: 2px solid var(--color-electric-blue);
+    outline-offset: 2px;
+}
+
+/* Component classes live in the `components` layer so Tailwind utilities
+   (the `utilities` layer, which cascades after it) can override them
+   without `!important` hacks. */
+@layer components {
+    /* Buttons and inputs share one control box: 36px tall, 6px radius,
+       13px label. Buttons are fit-content — they NEVER stretch inside
+       flex/grid parents; pass `w-full` explicitly for the rare
+       full-width case (auth). */
+    .btn-primary,
+    .btn-secondary,
+    .btn-outline,
+    .btn-destructive {
+        border-radius: var(--radius-buttons);
+        padding: 0 14px;
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: fit-content;
+        min-height: var(--control-h);
+        border: 1px solid transparent;
+        transition:
+            background-color 120ms ease,
+            border-color 120ms ease;
+    }
+
+    .btn-primary {
+        background: var(--color-midnight);
+        color: #fff;
+        box-shadow: var(--shadow-button);
+    }
+    .btn-primary:hover {
+        background: var(--color-midnight-hover);
+    }
+    .btn-primary:active {
+        background: var(--color-midnight-pressed);
+    }
+    .btn-primary:disabled {
+        background: var(--color-sunken);
+        color: var(--color-fog);
+        cursor: not-allowed;
+    }
+
+    /* Neutral secondary: white surface, hairline border, ink text */
+    .btn-secondary,
+    .btn-outline {
+        background: var(--color-paper);
+        color: var(--color-ink);
+        border-color: var(--color-border-strong);
+    }
+    .btn-secondary:hover,
+    .btn-outline:hover {
+        background: var(--color-sunken);
+    }
+
+    .btn-destructive {
+        background: var(--color-paper);
+        color: var(--color-coral);
+        border-color: var(--color-coral);
+    }
+    .btn-destructive:hover {
+        background: var(--color-blush);
+    }
+
+    .btn-ghost {
+        background: transparent;
+        color: var(--color-smoke);
+        border-radius: var(--radius-buttons);
+        padding: 6px 8px;
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        width: fit-content;
+        min-height: auto;
+        text-decoration: none;
+        transition: color 120ms ease;
+    }
+    .btn-ghost:hover {
+        color: var(--color-ink);
+    }
+
+    /* Board-surface buttons — neutral now that surfaces are flat */
+    .btn-onboard {
+        background: var(--color-paper);
+        color: var(--color-ink);
+        border: 1px solid var(--color-mist);
+        border-radius: var(--radius-buttons);
+        padding: 0 12px;
+        font-weight: 500;
+        font-size: 13px;
+        min-height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: fit-content;
+        box-shadow: var(--shadow-subtle);
+        transition:
+            background-color 120ms ease,
+            border-color 120ms ease;
+    }
+    .btn-onboard:hover {
+        background: var(--color-sunken);
+        border-color: var(--color-border-strong);
+    }
+    .btn-onboard--dashed {
+        background: transparent;
+        border: 1px dashed var(--color-border-strong);
+        color: var(--color-smoke);
+        box-shadow: none;
+    }
+    .btn-onboard--dashed:hover {
+        background: var(--color-paper);
+        border-color: var(--color-fog);
+        color: var(--color-ink);
+    }
+
+    .btn-icon {
+        background: transparent;
+        color: var(--color-fog);
+        border-radius: var(--radius-buttons);
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+            background-color 120ms ease,
+            color 120ms ease;
+    }
+    .btn-icon:hover {
+        background: var(--color-sunken);
+        color: var(--color-ink);
+    }
+    .btn-icon[data-active='true'] {
+        color: var(--color-electric-blue);
+    }
+
+    .btn--sm {
+        padding: 0 10px;
+        font-size: 12px;
+        min-height: var(--control-h-sm);
+    }
+    .btn-icon.btn--sm {
+        width: 28px;
+        height: 28px;
+    }
+
+    /* Grouping band — flat, quiet */
+    .card-surface {
+        background: var(--color-paper);
+        border: 1px solid var(--color-mist);
+        border-radius: var(--radius-largecards);
+        padding: 16px;
+    }
+
+    /* Former warm interlude — now a neutral band */
+    .card-cream {
+        background: var(--color-cream);
+        color: var(--color-ink);
+        border-radius: var(--radius-largecards);
+        padding: 16px;
+    }
+
+    /* Raised card: white, hairline border, whisper of shadow */
+    .elevated-surface {
+        background: var(--color-paper);
+        border: 1px solid var(--color-mist);
+        border-radius: var(--radius-cards);
+        box-shadow: var(--shadow-elevated);
+    }
+
+    /* Tag chip — subtle 4px radius, no pills */
+    .pill {
+        border-radius: var(--radius-tags);
+        padding: 2px 8px;
+        font-size: 11px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .input {
+        border: 1px solid var(--color-border-strong);
+        border-radius: var(--radius-inputs);
+        padding: 7px 12px;
+        font-size: 13px;
+        line-height: 20px;
+        min-height: var(--control-h);
+        background: var(--color-paper);
+        color: var(--color-ink);
+        width: 100%;
+    }
+    .input:focus {
+        outline: 2px solid var(--color-electric-blue);
+        outline-offset: 0;
+        border-color: var(--color-electric-blue);
+    }
+    .input--icon-left {
+        padding-left: 36px;
+    }
+
+    /* Dropdown entrance — one of the micro-animations the product keeps */
+    .menu-pop {
+        transform-origin: top right;
+        animation: menu-pop 120ms ease-out;
+    }
+    @keyframes menu-pop {
+        from {
+            opacity: 0;
+            transform: translateY(-4px) scale(0.98);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* Round icon action in the top bar, sized to sit beside the avatar */
+    .header-icon {
+        position: relative;
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        color: var(--color-smoke);
+        transition:
+            color 120ms ease,
+            background-color 120ms ease;
+    }
+    .header-icon:hover {
+        color: var(--color-ink);
+        background: var(--color-sunken);
+    }
+    .header-icon[aria-current='page'] {
+        color: var(--color-electric-blue);
+        background: var(--color-electric-blue-tint);
+    }
+
+    /* Unread count — pops on change so live arrivals get noticed */
+    .badge-pop {
+        animation: badge-pop 240ms ease-out;
+    }
+    @keyframes badge-pop {
+        from {
+            opacity: 0;
+            transform: scale(0.4);
+        }
+        60% {
+            transform: scale(1.15);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .eyebrow {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-smoke);
+    }
+
+    /* Brand wordmark swap: logo-color.svg's text is solid black, invisible
+       against the dark-mode paper background. logo-color-dark.svg keeps the
+       blue mark and paints only the wordmark white, so the brand color
+       survives dark mode. Kept out of components (no `dark:`
+       variants there per DESIGN.md) by pairing two <img> tags with this
+       toggle, same as every other dark value living only in this file. */
+    .logo-dark {
+        display: none;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .logo-light {
+        display: none;
+    }
+    .logo-dark {
+        display: block;
+    }
+}

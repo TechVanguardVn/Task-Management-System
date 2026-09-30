@@ -1,0 +1,24 @@
+services:
+    db:
+        image: postgres:16-alpine
+        restart: unless-stopped
+        environment:
+            POSTGRES_USER: stackboard
+            POSTGRES_PASSWORD: stackboard
+            POSTGRES_DB: stackboard
+        # Loopback only: this database ships with well-known credentials, and
+        # binding it to every interface offers it to whatever network the
+        # machine happens to be on. Everything that needs it (the app,
+        # drizzle-kit, psql) connects from this machine.
+        ports:
+            - '127.0.0.1:5432:5432'
+        volumes:
+            - stackboard_pgdata:/var/lib/postgresql/data
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U stackboard']
+            interval: 5s
+            timeout: 5s
+            retries: 10
+
+volumes:
+    stackboard_pgdata:
