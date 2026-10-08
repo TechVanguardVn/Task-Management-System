@@ -1,0 +1,53 @@
+# ==========================================
+# Cấu hình bỏ qua riêng theo yêu cầu người dùng
+# ==========================================
+.agents/
+AGENTS.md
+# Kế hoạch tổng thể (không đưa lên git theo yêu cầu)
+docs/ke-hoach/
+
+# ==========================================
+# Môi trường & Bảo mật (Secrets)
+# ==========================================
+.env
+.env.local
+*.env
+!.env.example
+
+# ==========================================
+# Java / Spring Boot / Maven
+# ==========================================
+backend/target/
+**/target/
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+
+# ==========================================
+# Node.js / React / Vite
+# ==========================================
+frontend/node_modules/
+**/node_modules/
+frontend/dist/
+**/dist/
+.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==========================================
+# IDE & Hệ điều hành
+# ==========================================
+.idea/
+*.iml
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
