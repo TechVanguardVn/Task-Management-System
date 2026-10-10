@@ -1,0 +1,36 @@
+version: '3'
+
+# Values come from `.env` (copy `.env.example`); `.env.local` overrides it when present.
+dotenv: ['.env.local', '.env']
+
+vars:
+  COMPOSE: docker compose -f docker-compose.dev.yml
+
+tasks:
+  dev:
+    desc: Run the app locally - database and API in Docker, web with hot reload on http://localhost:3000
+    cmds:
+      - '{{.COMPOSE}} up --build --detach api'
+      - npm --workspace @task-management/web run dev -- --port ${WEB_PORT:-3000}
+
+  seed:
+    desc: Create or refresh the demo users, workspaces and tasks (needs SEED_DEMO_DATA and SEED_DEMO_PASSWORD)
+    cmds:
+      - '{{.COMPOSE}} run --build --rm migrate npm run --workspace @task-management/api db:seed'
+
+  reset:
+    desc: Delete every record in the local database, then recreate it with the seed data
+    cmds:
+      - '{{.COMPOSE}} down --volumes'
+      - '{{.COMPOSE}} up --build --detach api'
+      - task: seed
+
+  down:
+    desc: Stop the database and API (data is kept)
+    cmds:
+      - '{{.COMPOSE}} down'
+
+  logs:
+    desc: Follow the API and database logs
+    cmds:
+      - '{{.COMPOSE}} logs --follow'
