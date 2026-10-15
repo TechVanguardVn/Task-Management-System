@@ -1,0 +1,105 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: todogit-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: todogit
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-extensions.sql:/docker-entrypoint-initdb.d/init-extensions.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d todogit"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      # Plain-http local origins: a Secure cookie is never stored there, so
+      # every request looks unauthenticated and login loops. Render keeps the
+      # NODE_ENV default (Secure on).
+      COOKIE_SECURE: "false"
+      PORT: 5004
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/todogit?schema=public
+      # Every origin that may call the API with credentials: compose web (:8080)
+      # and the Kong-served SPA (:8000). Host dev adds :5173 via backend/.env.
+      FRONTEND_ORIGIN: "http://localhost:8080,http://localhost:8000"
+      JWT_SECRET: "dev-secret-change-in-prod"
+      JWT_EXPIRES_IN: "7d"
+      BCRYPT_SALT_ROUNDS: "12"
+      # Interpolated from the gitignored root .env so real credentials
+      # never land in this tracked file (see .env.example).
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      GITHUB_CALLBACK_URL: "http://localhost:5004/api/auth/github/callback"
+    ports:
+      - "5004:5004"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:5004/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      start_period: 15s
+      retries: 5
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Vite inlines this at build time. The default keeps the default profile
+        # working without Kong; for all traffic through the gateway rebuild with
+        # VITE_API_URL=http://localhost:8000/api (see README).
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:5004/api}
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+
+  kong:
+    image: kong:3.9
+    profiles: ["gateway"]
+    restart: unless-stopped
+    volumes:
+      - ./infra/kong/kong.yml:/etc/kong/kong.yml
+      - ./infra/kong/:/kong/declarative/
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /kong/declarative/kong.yml
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+    depends_on:
+      - api
+      - web
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: todogit-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@todogit.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:

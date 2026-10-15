@@ -1,0 +1,26 @@
+import { Outlet } from 'react-router-dom'
+import { Toaster } from 'sonner'
+import { Footer } from './Footer'
+import { Header } from './Header'
+import { Sidebar } from './Sidebar'
+
+/**
+ * Every protected screen renders inside this shell. The sidebar collapses at
+ * 1024px, below which the nav moves into the header. The column flex + flex-1
+ * content keeps the footer pinned to the viewport bottom on short pages.
+ */
+export function AppShell() {
+  return (
+    <div className="min-h-screen bg-canvas flex flex-col">
+      <Header />
+      <div className="flex flex-1">
+        <Sidebar />
+        <main className="flex-1 min-w-0 p-5">
+          <Outlet />
+        </main>
+      </div>
+      <Footer />
+      <Toaster position="bottom-right" theme="light" toastOptions={{ duration: 4000 }} />
+    </div>
+  )
+}
