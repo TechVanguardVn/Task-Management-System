@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ListTasksFilterParams } from "../../../types/task.types";
+import { DASHBOARD_QUERY_KEY } from "../../dashboard/hooks/useDashboard";
 import { PROJECTS_QUERY_KEY } from "../../projects/hooks/useProjects";
 import {
   type CreateTaskPayload,
@@ -46,6 +47,7 @@ export function useCreateTaskMutation() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: TASKS_QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: PROJECTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: DASHBOARD_QUERY_KEY });
     },
   });
 }
@@ -64,6 +66,7 @@ export function useUpdateTaskMutation() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: TASKS_QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: PROJECTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: DASHBOARD_QUERY_KEY });
     },
   });
 }
@@ -76,6 +79,7 @@ export function useDeleteTaskMutation() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: TASKS_QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: PROJECTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: DASHBOARD_QUERY_KEY });
     },
   });
 }

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ListProjectsFilterParams } from "../../../types/project.types";
+import { DASHBOARD_QUERY_KEY } from "../../dashboard/hooks/useDashboard";
 import {
   type CreateProjectPayload,
   createProject,
@@ -43,6 +44,7 @@ export function useCreateProjectMutation() {
     mutationFn: (payload: CreateProjectPayload) => createProject(payload),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: PROJECTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: DASHBOARD_QUERY_KEY });
     },
   });
 }
@@ -60,6 +62,7 @@ export function useUpdateProjectMutation() {
     }) => updateProject(projectId, payload),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: PROJECTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: DASHBOARD_QUERY_KEY });
     },
   });
 }
@@ -71,6 +74,7 @@ export function useDeleteProjectMutation() {
     mutationFn: (projectId: string) => deleteProject(projectId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: PROJECTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: DASHBOARD_QUERY_KEY });
     },
   });
 }
