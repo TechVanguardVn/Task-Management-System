@@ -5,8 +5,10 @@ node_modules/
 .env
 .env.*
 !.env.example
+!/backend/.env.test.example
 
 # Private keys and certificate bundles
+/backend/certs/
 *.key
 *.p12
 *.pfx
