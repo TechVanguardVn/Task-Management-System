@@ -3,6 +3,7 @@ import { AlertCircle, ArrowRight, Eye, EyeOff, Layers, Loader2 } from "lucide-re
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
+import authBgArchitectural from "../../../assets/auth-bg-architectural.jpg";
 import { getFriendlyErrorMessage } from "../../../lib/api-client";
 import { useLoginMutation, useRegisterMutation } from "../hooks/useAuth";
 import {
@@ -34,11 +35,25 @@ export function AuthPage({ mode }: AuthPageProps) {
   };
 
   return (
-    <main className="bento-canvas flex min-h-dvh items-center justify-center p-4 sm:p-6">
-      <div className="w-full max-w-[420px]">
+    <main className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-[#e2e5ea] p-4 sm:p-6">
+      {/* Layer 1: Full-screen Monochrome Architectural Background */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${authBgArchitectural})` }}
+      />
+
+      {/* Layer 2: Radial Atmospheric Scrim & Subtle Technical Dot Grid */}
+      <div
+        aria-hidden="true"
+        className="auth-architectural-grid pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(248,250,252,0.48)_0%,rgba(241,245,249,0.18)_50%,rgba(15,23,42,0.16)_100%)]"
+      />
+
+      {/* Layer 3: Double-Bezel Frosted Glass Frame + Auth Bento Card */}
+      <div className="relative z-10 w-full max-w-[436px] rounded-[32px] border border-white/65 bg-white/35 p-2 shadow-[0_28px_70px_-16px_rgba(15,23,42,0.22),0_8px_24px_-6px_rgba(15,23,42,0.1)] backdrop-blur-md">
         <section
           aria-labelledby="auth-heading"
-          className="bento-card rounded-3xl p-7 sm:p-8"
+          className="rounded-[24px] border border-white/90 bg-white/93 p-7 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06)] backdrop-blur-xl sm:p-8"
         >
           {/* Header */}
           <div className="mb-5 flex flex-col items-start">
