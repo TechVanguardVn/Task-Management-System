@@ -58,6 +58,8 @@ export function getFriendlyErrorMessage(error: unknown): string {
         return "Phiên bảo mật đã thay đổi. Vui lòng tải lại trang và thử lại.";
       case "UNAUTHORIZED":
         return "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
+      case "PROJECT_NOT_FOUND":
+        return "Không tìm thấy dự án hoặc bạn không có quyền truy cập.";
       default:
         return error.message || "Không thể xử lý yêu cầu lúc này.";
     }

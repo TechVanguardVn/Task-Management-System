@@ -2,7 +2,8 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import { ProtectedRoute, PublicOnlyRoute } from "../components/ProtectedRoute";
 import { AuthPage } from "../features/auth/pages/AuthPage";
 import { DashboardPlaceholderPage } from "../features/dashboard/pages/DashboardPlaceholderPage";
-import { ProjectsPlaceholderPage } from "../features/projects/pages/ProjectsPlaceholderPage";
+import { ProjectDetailPage } from "../features/projects/pages/ProjectDetailPage";
+import { ProjectsListPage } from "../features/projects/pages/ProjectsListPage";
 import { AppShell } from "../layouts/AppShell";
 
 export const router = createBrowserRouter([
@@ -31,7 +32,11 @@ export const router = createBrowserRouter([
           },
           {
             path: "/projects",
-            element: <ProjectsPlaceholderPage />,
+            element: <ProjectsListPage />,
+          },
+          {
+            path: "/projects/:projectId",
+            element: <ProjectDetailPage />,
           },
         ],
       },
