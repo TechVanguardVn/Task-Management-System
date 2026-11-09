@@ -50,26 +50,30 @@ export function getFriendlyErrorMessage(error: unknown): string {
   if (error instanceof ApiError) {
     switch (error.code) {
       case "INVALID_CREDENTIALS":
-        return "Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.";
+        return "Invalid email or password. Please try again.";
       case "EMAIL_ALREADY_EXISTS":
-        return "Email này đã được sử dụng. Vui lòng đăng nhập hoặc chọn email khác.";
+        return "This email is already registered. Please sign in instead.";
       case "CSRF_INVALID":
       case "CSRF_ORIGIN_MISMATCH":
-        return "Phiên bảo mật đã thay đổi. Vui lòng tải lại trang và thử lại.";
+        return "Security token expired. Please refresh the page and try again.";
       case "UNAUTHORIZED":
-        return "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
+        return "Your session has expired. Please sign in again.";
       case "PROJECT_NOT_FOUND":
-        return "Không tìm thấy dự án hoặc bạn không có quyền truy cập.";
+        return "Project not found or you do not have access.";
+      case "TASK_NOT_FOUND":
+        return "Task not found or you do not have access.";
+      case "PROJECT_ARCHIVED":
+        return "This project is archived. Restore it before modifying tasks.";
       default:
-        return error.message || "Không thể xử lý yêu cầu lúc này.";
+        return error.message || "Unable to process your request.";
     }
   }
 
   if (error instanceof Error) {
-    return "Không thể kết nối tới máy chủ. Vui lòng thử lại sau.";
+    return "Cannot connect to the server. Please try again.";
   }
 
-  return "Đã xảy ra lỗi không xác định.";
+  return "An unexpected error occurred.";
 }
 
 export async function apiFetch<T>(

@@ -35,62 +35,57 @@ export function AuthPage({ mode }: AuthPageProps) {
 
   return (
     <main className="bento-canvas flex min-h-dvh items-center justify-center p-4 sm:p-6">
-      <div className="w-full max-w-[440px]">
+      <div className="w-full max-w-[420px]">
         <section
           aria-labelledby="auth-heading"
-          className="bento-card rounded-3xl p-7 sm:p-9"
+          className="bento-card rounded-3xl p-7 sm:p-8"
         >
           {/* Header */}
-          <div className="mb-6 flex flex-col items-start">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-slate-200/90 bg-slate-50 px-3 py-1 text-xs font-semibold tracking-wider text-slate-700 uppercase">
+          <div className="mb-5 flex flex-col items-start">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-slate-200/90 bg-slate-50 px-3 py-1 text-xs font-semibold tracking-wider text-slate-700 uppercase">
               <Layers className="h-3.5 w-3.5 text-zinc-900" aria-hidden="true" />
-              <span>Task Management</span>
+              <span>TaskFlow</span>
             </div>
 
             <h1
               id="auth-heading"
-              className="font-heading text-2xl font-semibold text-zinc-900 sm:text-[28px]"
+              className="font-heading text-2xl font-semibold text-zinc-900"
             >
-              {isLogin ? "Chào mừng trở lại" : "Tạo tài khoản mới"}
+              {isLogin ? "Welcome back" : "Create your account"}
             </h1>
-            <p className="mt-1.5 text-sm leading-relaxed text-slate-600">
-              {isLogin
-                ? "Đăng nhập để tiếp tục quản lý các dự án và công việc cá nhân của bạn."
-                : "Thiết lập không gian làm việc riêng để tổ chức dự án và theo dõi tiến độ."}
-            </p>
           </div>
 
           {/* Segmented Pill Control */}
           <div
             role="tablist"
-            aria-label="Chuyển đổi giữa đăng nhập và đăng ký"
-            className="mb-6 grid grid-cols-2 rounded-2xl border border-slate-200/80 bg-slate-100/90 p-1.5"
+            aria-label="Authentication mode"
+            className="mb-5 grid grid-cols-2 rounded-2xl border border-slate-200/80 bg-slate-100/90 p-1.5"
           >
             <button
               type="button"
               role="tab"
               aria-selected={isLogin}
               onClick={() => switchMode("login")}
-              className={`min-h-[42px] cursor-pointer rounded-xl text-sm transition-all focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none ${
+              className={`min-h-[40px] cursor-pointer rounded-xl text-sm transition-all focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none ${
                 isLogin
                   ? "bg-white font-semibold text-zinc-900 shadow-xs"
                   : "font-medium text-slate-600 hover:text-zinc-900"
               }`}
             >
-              Đăng nhập
+              Sign In
             </button>
             <button
               type="button"
               role="tab"
               aria-selected={!isLogin}
               onClick={() => switchMode("register")}
-              className={`min-h-[42px] cursor-pointer rounded-xl text-sm transition-all focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none ${
+              className={`min-h-[40px] cursor-pointer rounded-xl text-sm transition-all focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none ${
                 !isLogin
                   ? "bg-white font-semibold text-zinc-900 shadow-xs"
                   : "font-medium text-slate-600 hover:text-zinc-900"
               }`}
             >
-              Đăng ký
+              Sign Up
             </button>
           </div>
 
@@ -136,7 +131,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
       <div>
         <label
           htmlFor="login-email"
-          className="mb-1.5 block text-sm font-medium text-slate-800"
+          className="mb-1.5 block text-xs font-semibold text-slate-700"
         >
           Email
         </label>
@@ -147,7 +142,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
           placeholder="you@example.com"
           aria-invalid={Boolean(errors.email)}
           aria-describedby={errors.email ? "login-email-error" : undefined}
-          className={`h-[46px] w-full rounded-xl border px-3.5 text-sm text-zinc-900 transition-colors placeholder:text-slate-400 focus:bg-white focus:ring-3 focus:outline-none ${
+          className={`h-[44px] w-full rounded-xl border px-3.5 text-sm text-zinc-900 transition-colors placeholder:text-slate-400 focus:bg-white focus:ring-3 focus:outline-none ${
             errors.email
               ? "border-red-300 bg-red-50/40 focus:border-red-600 focus:ring-red-600/10"
               : "border-slate-200 bg-slate-50/80 focus:border-zinc-900 focus:ring-zinc-900/10"
@@ -169,19 +164,19 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
       <div>
         <label
           htmlFor="login-password"
-          className="mb-1.5 block text-sm font-medium text-slate-800"
+          className="mb-1.5 block text-xs font-semibold text-slate-700"
         >
-          Mật khẩu
+          Password
         </label>
         <div className="relative">
           <input
             id="login-password"
             type={showPassword ? "text" : "password"}
             autoComplete="current-password"
-            placeholder="Nhập mật khẩu của bạn"
+            placeholder="Enter your password"
             aria-invalid={Boolean(errors.password)}
             aria-describedby={errors.password ? "login-password-error" : undefined}
-            className={`h-[46px] w-full rounded-xl border pr-12 pl-3.5 text-sm text-zinc-900 transition-colors placeholder:text-slate-400 focus:bg-white focus:ring-3 focus:outline-none ${
+            className={`h-[44px] w-full rounded-xl border pr-11 pl-3.5 text-sm text-zinc-900 transition-colors placeholder:text-slate-400 focus:bg-white focus:ring-3 focus:outline-none ${
               errors.password
                 ? "border-red-300 bg-red-50/40 focus:border-red-600 focus:ring-red-600/10"
                 : "border-slate-200 bg-slate-50/80 focus:border-zinc-900 focus:ring-zinc-900/10"
@@ -191,8 +186,8 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
-            aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-            className="absolute top-1/2 right-1 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-200/60 hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            className="absolute top-1/2 right-1 flex h-9 w-9 -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-200/60 hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none"
           >
             {showPassword ? (
               <EyeOff className="h-4 w-4" aria-hidden="true" />
@@ -226,16 +221,16 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
       <button
         type="submit"
         disabled={loginMutation.isPending}
-        className="mt-2 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 text-sm font-semibold text-white shadow-xs transition-all hover:bg-zinc-800 active:scale-[0.99] focus-visible:ring-3 focus-visible:ring-zinc-900/25 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-2 inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 text-sm font-semibold whitespace-nowrap text-white shadow-xs transition-all hover:bg-zinc-800 active:scale-[0.99] focus-visible:ring-3 focus-visible:ring-zinc-900/25 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
       >
         {loginMutation.isPending ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-            <span>Đang đăng nhập...</span>
+            <span>Signing in...</span>
           </>
         ) : (
           <>
-            <span>Đăng nhập vào Workspace</span>
+            <span>Sign In</span>
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </>
         )}
@@ -275,18 +270,18 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
       <div>
         <label
           htmlFor="register-name"
-          className="mb-1.5 block text-sm font-medium text-slate-800"
+          className="mb-1.5 block text-xs font-semibold text-slate-700"
         >
-          Họ và tên
+          Full Name
         </label>
         <input
           id="register-name"
           type="text"
           autoComplete="name"
-          placeholder="Nguyễn Văn A"
+          placeholder="Alex Morgan"
           aria-invalid={Boolean(errors.name)}
           aria-describedby={errors.name ? "register-name-error" : undefined}
-          className={`h-[46px] w-full rounded-xl border px-3.5 text-sm text-zinc-900 transition-colors placeholder:text-slate-400 focus:bg-white focus:ring-3 focus:outline-none ${
+          className={`h-[44px] w-full rounded-xl border px-3.5 text-sm text-zinc-900 transition-colors placeholder:text-slate-400 focus:bg-white focus:ring-3 focus:outline-none ${
             errors.name
               ? "border-red-300 bg-red-50/40 focus:border-red-600 focus:ring-red-600/10"
               : "border-slate-200 bg-slate-50/80 focus:border-zinc-900 focus:ring-zinc-900/10"
@@ -308,7 +303,7 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
       <div>
         <label
           htmlFor="register-email"
-          className="mb-1.5 block text-sm font-medium text-slate-800"
+          className="mb-1.5 block text-xs font-semibold text-slate-700"
         >
           Email
         </label>
@@ -319,7 +314,7 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
           placeholder="you@example.com"
           aria-invalid={Boolean(errors.email)}
           aria-describedby={errors.email ? "register-email-error" : undefined}
-          className={`h-[46px] w-full rounded-xl border px-3.5 text-sm text-zinc-900 transition-colors placeholder:text-slate-400 focus:bg-white focus:ring-3 focus:outline-none ${
+          className={`h-[44px] w-full rounded-xl border px-3.5 text-sm text-zinc-900 transition-colors placeholder:text-slate-400 focus:bg-white focus:ring-3 focus:outline-none ${
             errors.email
               ? "border-red-300 bg-red-50/40 focus:border-red-600 focus:ring-red-600/10"
               : "border-slate-200 bg-slate-50/80 focus:border-zinc-900 focus:ring-zinc-900/10"
@@ -342,12 +337,12 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
         <div className="mb-1.5 flex items-center justify-between">
           <label
             htmlFor="register-password"
-            className="block text-sm font-medium text-slate-800"
+            className="block text-xs font-semibold text-slate-700"
           >
-            Mật khẩu
+            Password
           </label>
-          <span id="register-password-hint" className="text-xs text-slate-500">
-            Tối thiểu 8 ký tự
+          <span id="register-password-hint" className="text-[11px] text-slate-400">
+            Min. 8 chars
           </span>
         </div>
         <div className="relative">
@@ -355,12 +350,12 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
             id="register-password"
             type={showPassword ? "text" : "password"}
             autoComplete="new-password"
-            placeholder="Tạo mật khẩu an toàn"
+            placeholder="Create a password"
             aria-invalid={Boolean(errors.password)}
             aria-describedby={
               errors.password ? "register-password-error" : "register-password-hint"
             }
-            className={`h-[46px] w-full rounded-xl border pr-12 pl-3.5 text-sm text-zinc-900 transition-colors placeholder:text-slate-400 focus:bg-white focus:ring-3 focus:outline-none ${
+            className={`h-[44px] w-full rounded-xl border pr-11 pl-3.5 text-sm text-zinc-900 transition-colors placeholder:text-slate-400 focus:bg-white focus:ring-3 focus:outline-none ${
               errors.password
                 ? "border-red-300 bg-red-50/40 focus:border-red-600 focus:ring-red-600/10"
                 : "border-slate-200 bg-slate-50/80 focus:border-zinc-900 focus:ring-zinc-900/10"
@@ -370,8 +365,8 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
-            aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-            className="absolute top-1/2 right-1 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-200/60 hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            className="absolute top-1/2 right-1 flex h-9 w-9 -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-200/60 hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none"
           >
             {showPassword ? (
               <EyeOff className="h-4 w-4" aria-hidden="true" />
@@ -405,16 +400,16 @@ function RegisterForm({ onSuccess }: { onSuccess: () => void }) {
       <button
         type="submit"
         disabled={registerMutation.isPending}
-        className="mt-2 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 text-sm font-semibold text-white shadow-xs transition-all hover:bg-zinc-800 active:scale-[0.99] focus-visible:ring-3 focus-visible:ring-zinc-900/25 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-2 inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 text-sm font-semibold whitespace-nowrap text-white shadow-xs transition-all hover:bg-zinc-800 active:scale-[0.99] focus-visible:ring-3 focus-visible:ring-zinc-900/25 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
       >
         {registerMutation.isPending ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-            <span>Đang tạo tài khoản...</span>
+            <span>Creating account...</span>
           </>
         ) : (
           <>
-            <span>Tạo tài khoản mới</span>
+            <span>Create Account</span>
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </>
         )}

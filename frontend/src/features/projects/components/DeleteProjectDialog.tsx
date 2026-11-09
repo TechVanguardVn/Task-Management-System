@@ -61,10 +61,10 @@ export function DeleteProjectDialog({
         aria-modal="true"
         aria-labelledby="delete-project-title"
         aria-describedby="delete-project-desc"
-        className="bento-card w-full max-w-md rounded-3xl p-6 sm:p-7"
+        className="bento-card w-full max-w-md rounded-3xl p-6"
       >
         <div className="mb-4 flex items-start justify-between gap-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-red-600">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-red-50 text-red-600">
             <AlertTriangle className="h-5 w-5" aria-hidden="true" />
           </div>
 
@@ -72,7 +72,7 @@ export function DeleteProjectDialog({
             type="button"
             onClick={onClose}
             disabled={deleteMutation.isPending}
-            aria-label="Đóng hộp thoại"
+            aria-label="Close dialog"
             className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-slate-500 transition-colors hover:bg-slate-100 hover:text-zinc-900"
           >
             <X className="h-4 w-4" aria-hidden="true" />
@@ -83,26 +83,26 @@ export function DeleteProjectDialog({
           id="delete-project-title"
           className="font-heading text-xl font-semibold text-zinc-900"
         >
-          Xóa vĩnh viễn dự án?
+          Delete Project?
         </h2>
 
         <p
           id="delete-project-desc"
           className="mt-2 text-sm leading-relaxed text-slate-600"
         >
-          Bạn đang yêu cầu xóa dự án{" "}
-          <span className="font-semibold text-zinc-900">“{project.name}”</span>.
+          Are you sure you want to delete{" "}
+          <span className="font-semibold text-zinc-900">“{project.name}”</span>?
           {project.stats.totalTasks > 0 ? (
             <>
               {" "}
-              Toàn bộ{" "}
+              All{" "}
               <span className="font-semibold text-red-600">
-                {project.stats.totalTasks} công việc
+                {project.stats.totalTasks} tasks
               </span>{" "}
-              thuộc dự án này cũng sẽ bị xóa vĩnh viễn và không thể khôi phục.
+              inside this project will also be permanently deleted.
             </>
           ) : (
-            " Hành động này không thể hoàn tác."
+            " This action cannot be undone."
           )}
         </p>
 
@@ -120,25 +120,25 @@ export function DeleteProjectDialog({
             type="button"
             onClick={onClose}
             disabled={deleteMutation.isPending}
-            className="min-h-[42px] cursor-pointer rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-60"
+            className="min-h-[40px] cursor-pointer rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold whitespace-nowrap text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-60"
           >
-            Giữ lại dự án
+            Cancel
           </button>
           <button
             type="button"
-            onClick={handleConfirmDelete}
+            onClick={() => void handleConfirmDelete()}
             disabled={deleteMutation.isPending}
-            className="inline-flex min-h-[42px] cursor-pointer items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex min-h-[40px] cursor-pointer items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-xs font-semibold whitespace-nowrap text-white transition-colors hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
           >
             {deleteMutation.isPending ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                <span>Đang xóa...</span>
+                <span>Deleting...</span>
               </>
             ) : (
               <>
                 <Trash2 className="h-4 w-4" aria-hidden="true" />
-                <span>Xóa dự án</span>
+                <span>Delete Project</span>
               </>
             )}
           </button>

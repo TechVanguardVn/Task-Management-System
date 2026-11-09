@@ -11,7 +11,7 @@ function SessionCheckingScreen() {
     >
       <div className="bento-card flex items-center gap-3 rounded-2xl px-5 py-4 text-sm font-medium text-slate-700">
         <Loader2 className="h-4 w-4 animate-spin text-zinc-900" aria-hidden="true" />
-        <span>Đang kiểm tra phiên đăng nhập...</span>
+        <span>Loading workspace...</span>
       </div>
     </div>
   );
