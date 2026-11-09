@@ -13,7 +13,7 @@ import { useCurrentUser, useLogoutMutation } from "../features/auth/hooks/useAut
 function getWorkspaceTitle(name: string): string {
   const trimmed = name.trim();
   if (!trimmed) {
-    return "Personal Workspace";
+    return "Workspace";
   }
   const parts = trimmed.split(/\s+/);
   const shortName = parts[parts.length - 1] || trimmed;
@@ -55,12 +55,12 @@ export function AppShell() {
   const navItems = [
     {
       to: "/dashboard",
-      label: "Tổng quan Dashboard",
+      label: "Dashboard",
       icon: LayoutGrid,
     },
     {
       to: "/projects",
-      label: "Dự án của tôi",
+      label: "Projects",
       icon: FolderKanban,
     },
   ];
@@ -70,29 +70,24 @@ export function AppShell() {
       <div className="mx-auto flex max-w-7xl flex-col gap-4 lg:flex-row lg:items-start">
         {/* Mobile Top Bar */}
         <header className="bento-card flex items-center justify-between rounded-2xl px-4 py-3 lg:hidden">
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="flex min-w-0 items-center gap-3">
             <div
               aria-hidden="true"
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-sm font-bold text-white"
             >
               {userInitial}
             </div>
-            <div className="min-w-0">
-              <p className="font-heading truncate text-sm font-semibold text-zinc-900">
-                {workspaceTitle}
-              </p>
-              <p className="truncate text-xs text-slate-500">
-                Personal Projects &amp; Tasks
-              </p>
-            </div>
+            <p className="font-heading truncate text-sm font-semibold text-zinc-900">
+              {workspaceTitle}
+            </p>
           </div>
 
           <button
             type="button"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            aria-label={mobileMenuOpen ? "Đóng menu điều hướng" : "Mở menu điều hướng"}
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={mobileMenuOpen}
-            className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-slate-700 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none"
+            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl text-slate-700 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none"
           >
             {mobileMenuOpen ? (
               <X className="h-5 w-5" aria-hidden="true" />
@@ -104,17 +99,17 @@ export function AppShell() {
 
         {/* Floating Bento Sidebar */}
         <aside
-          aria-label="Điều hướng chính"
-          className={`bento-card w-full shrink-0 flex-col justify-between rounded-3xl p-5 lg:sticky lg:top-5 lg:flex lg:min-h-[calc(100dvh-2.5rem)] lg:w-72 ${
+          aria-label="Main navigation"
+          className={`bento-card w-full shrink-0 flex-col justify-between rounded-3xl p-4 lg:sticky lg:top-5 lg:flex lg:min-h-[calc(100dvh-2.5rem)] lg:w-64 ${
             mobileMenuOpen ? "flex" : "hidden"
           }`}
         >
           <div>
-            {/* Personalized Workspace Header (Method 1) */}
-            <div className="mb-6 hidden items-center gap-3.5 rounded-2xl border border-slate-100 bg-slate-50/80 p-3.5 lg:flex">
+            {/* Workspace Header */}
+            <div className="mb-5 hidden items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/80 p-3 lg:flex">
               <div
                 aria-hidden="true"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-sm font-bold text-white shadow-xs"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-sm font-bold text-white shadow-xs"
               >
                 {userInitial}
               </div>
@@ -122,17 +117,17 @@ export function AppShell() {
                 <p className="font-heading truncate text-sm font-semibold text-zinc-900">
                   {workspaceTitle}
                 </p>
-                <p className="truncate text-xs text-slate-500">
-                  Personal Projects &amp; Tasks
+                <p className="truncate text-[11px] font-medium text-slate-500">
+                  TaskFlow
                 </p>
               </div>
             </div>
 
             {/* Navigation Links */}
             <div className="mb-2 px-2 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
-              Không gian làm việc
+              Menu
             </div>
-            <nav className="space-y-1.5">
+            <nav className="space-y-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -141,7 +136,7 @@ export function AppShell() {
                     to={item.to}
                     onClick={() => setMobileMenuOpen(false)}
                     className={({ isActive }) =>
-                      `flex min-h-[44px] items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm transition-all focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none ${
+                      `flex min-h-[42px] items-center gap-3 rounded-xl px-3.5 py-2 text-sm whitespace-nowrap transition-all focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none ${
                         isActive
                           ? "bg-zinc-900 font-semibold text-white shadow-xs"
                           : "font-medium text-slate-600 hover:bg-slate-100 hover:text-zinc-900"
@@ -156,9 +151,9 @@ export function AppShell() {
             </nav>
           </div>
 
-          {/* Account & Separated Logout Action */}
-          <div className="mt-6 border-t border-slate-200/80 pt-4">
-            <div className="mb-3 rounded-2xl bg-slate-50 px-3.5 py-3">
+          {/* Account & Sign Out */}
+          <div className="mt-6 border-t border-slate-200/80 pt-3.5">
+            <div className="mb-2.5 rounded-2xl bg-slate-50 px-3.5 py-2.5">
               <p className="truncate text-sm font-semibold text-zinc-900">
                 {user.name}
               </p>
@@ -167,19 +162,19 @@ export function AppShell() {
 
             <button
               type="button"
-              onClick={handleLogout}
+              onClick={() => void handleLogout()}
               disabled={logoutMutation.isPending}
-              className="flex min-h-[44px] w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-700 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex min-h-[40px] w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold whitespace-nowrap text-slate-700 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-700 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
             >
               {logoutMutation.isPending ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                  <span>Đang đăng xuất...</span>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                  <span>Signing out...</span>
                 </>
               ) : (
                 <>
-                  <LogOut className="h-4 w-4" aria-hidden="true" />
-                  <span>Đăng xuất</span>
+                  <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span>Sign Out</span>
                 </>
               )}
             </button>

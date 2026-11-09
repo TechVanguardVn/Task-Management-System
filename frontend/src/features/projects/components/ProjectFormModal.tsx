@@ -133,10 +133,10 @@ export function ProjectFormModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="project-modal-title"
-        className="bento-card max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-3xl p-6 sm:p-7"
+        className="bento-card max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-3xl p-6"
       >
         {/* Header */}
-        <div className="mb-5 flex items-start justify-between gap-4">
+        <div className="mb-5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-white shadow-xs"
@@ -148,26 +148,19 @@ export function ProjectFormModal({
                 <FolderPlus className="h-5 w-5" aria-hidden="true" />
               )}
             </div>
-            <div>
-              <h2
-                id="project-modal-title"
-                className="font-heading text-xl font-semibold text-zinc-900"
-              >
-                {isEdit ? "Chỉnh sửa dự án" : "Tạo dự án mới"}
-              </h2>
-              <p className="text-xs text-slate-500">
-                {isEdit
-                  ? "Cập nhật thông tin, màu nhận diện hoặc thời hạn dự án."
-                  : "Tạo không gian riêng để tổ chức và theo dõi các công việc."}
-              </p>
-            </div>
+            <h2
+              id="project-modal-title"
+              className="font-heading text-xl font-semibold text-zinc-900"
+            >
+              {isEdit ? "Edit Project" : "New Project"}
+            </h2>
           </div>
 
           <button
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            aria-label="Đóng hộp thoại"
+            aria-label="Close modal"
             className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-slate-500 transition-colors hover:bg-slate-100 hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none"
           >
             <X className="h-4 w-4" aria-hidden="true" />
@@ -191,12 +184,12 @@ export function ProjectFormModal({
               htmlFor="project-name"
               className="mb-1.5 block text-xs font-semibold text-slate-700"
             >
-              Tên dự án <span className="text-red-500">*</span>
+              Project Name <span className="text-red-500">*</span>
             </label>
             <input
               id="project-name"
               type="text"
-              placeholder="Ví dụ: Website Thương mại Điện tử, Nghiên cứu AI..."
+              placeholder="e.g. Website Redesign, Mobile App..."
               aria-invalid={Boolean(errors.name)}
               className={`w-full rounded-xl border px-3.5 py-2.5 text-sm text-zinc-900 transition-colors placeholder:text-slate-400 focus:bg-white focus:outline-none ${
                 errors.name
@@ -218,12 +211,12 @@ export function ProjectFormModal({
               htmlFor="project-description"
               className="mb-1.5 block text-xs font-semibold text-slate-700"
             >
-              Mô tả dự án
+              Description
             </label>
             <textarea
               id="project-description"
-              rows={3}
-              placeholder="Ghi chú mục tiêu, phạm vi hoặc các cột mốc chính của dự án..."
+              rows={2}
+              placeholder="Optional summary or goals..."
               aria-invalid={Boolean(errors.description)}
               className={`w-full resize-none rounded-xl border px-3.5 py-2.5 text-sm text-zinc-900 transition-colors placeholder:text-slate-400 focus:bg-white focus:outline-none ${
                 errors.description
@@ -242,7 +235,7 @@ export function ProjectFormModal({
           {/* Color Picker */}
           <div>
             <span className="mb-2 block text-xs font-semibold text-slate-700">
-              Màu nhận diện
+              Color
             </span>
             <div className="flex flex-wrap items-center gap-2.5">
               {PROJECT_COLOR_PRESETS.map((preset) => {
@@ -256,7 +249,7 @@ export function ProjectFormModal({
                       setValue("color", preset.value, { shouldValidate: true })
                     }
                     title={preset.label}
-                    aria-label={`Chọn màu ${preset.label}`}
+                    aria-label={`Select color ${preset.label}`}
                     aria-pressed={isSelected}
                     className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl transition-transform focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 focus-visible:outline-none ${
                       isSelected ? "scale-105 ring-2 ring-zinc-900 ring-offset-2" : "hover:scale-105"
@@ -279,7 +272,7 @@ export function ProjectFormModal({
                 htmlFor="project-start-date"
                 className="mb-1.5 block text-xs font-semibold text-slate-700"
               >
-                Ngày bắt đầu
+                Start Date
               </label>
               <input
                 id="project-start-date"
@@ -300,7 +293,7 @@ export function ProjectFormModal({
                 htmlFor="project-due-date"
                 className="mb-1.5 block text-xs font-semibold text-slate-700"
               >
-                Hạn hoàn thành
+                Due Date
               </label>
               <input
                 id="project-due-date"
@@ -325,7 +318,7 @@ export function ProjectFormModal({
           {isEdit ? (
             <div>
               <span className="mb-1.5 block text-xs font-semibold text-slate-700">
-                Trạng thái dự án
+                Status
               </span>
               <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1.5">
                 <button
@@ -333,26 +326,26 @@ export function ProjectFormModal({
                   onClick={() =>
                     setValue("status", "ACTIVE", { shouldValidate: true })
                   }
-                  className={`cursor-pointer rounded-xl py-2 text-xs font-semibold transition-all ${
+                  className={`cursor-pointer rounded-xl py-2 text-xs font-semibold whitespace-nowrap transition-all ${
                     selectedStatus === "ACTIVE"
                       ? "bg-white text-emerald-700 shadow-xs"
                       : "text-slate-600 hover:text-zinc-900"
                   }`}
                 >
-                  Đang hoạt động
+                  Active
                 </button>
                 <button
                   type="button"
                   onClick={() =>
                     setValue("status", "ARCHIVED", { shouldValidate: true })
                   }
-                  className={`cursor-pointer rounded-xl py-2 text-xs font-semibold transition-all ${
+                  className={`cursor-pointer rounded-xl py-2 text-xs font-semibold whitespace-nowrap transition-all ${
                     selectedStatus === "ARCHIVED"
                       ? "bg-white text-amber-700 shadow-xs"
                       : "text-slate-600 hover:text-zinc-900"
                   }`}
                 >
-                  Đã lưu trữ (Archive)
+                  Archived
                 </button>
               </div>
             </div>
@@ -364,22 +357,22 @@ export function ProjectFormModal({
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="min-h-[42px] cursor-pointer rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none disabled:opacity-60"
+              className="min-h-[40px] cursor-pointer rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold whitespace-nowrap text-slate-700 transition-colors hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none disabled:opacity-60"
             >
-              Hủy
+              Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex min-h-[42px] cursor-pointer items-center justify-center gap-2 rounded-xl bg-zinc-900 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-zinc-800 focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex min-h-[40px] cursor-pointer items-center justify-center gap-2 rounded-xl bg-zinc-900 px-5 py-2 text-xs font-semibold whitespace-nowrap text-white transition-colors hover:bg-zinc-800 focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                  <span>{isEdit ? "Đang lưu..." : "Đang tạo..."}</span>
+                  <span>{isEdit ? "Saving..." : "Creating..."}</span>
                 </>
               ) : (
-                <span>{isEdit ? "Lưu thay đổi" : "Tạo dự án"}</span>
+                <span>{isEdit ? "Save Changes" : "Create Project"}</span>
               )}
             </button>
           </div>

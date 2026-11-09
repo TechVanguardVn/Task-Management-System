@@ -8,30 +8,30 @@ export const projectFormSchema = z
     name: z
       .string()
       .trim()
-      .min(1, "Vui lòng nhập tên dự án.")
-      .max(120, "Tên dự án tối đa 120 ký tự."),
+      .min(1, "Project name is required.")
+      .max(120, "Project name must be at most 120 characters."),
     description: z
       .string()
       .trim()
-      .max(2000, "Mô tả dự án tối đa 2000 ký tự."),
+      .max(2000, "Description must be at most 2000 characters."),
     color: z
       .string()
       .trim()
-      .refine((val) => HEX_COLOR_REGEX.test(val), "Mã màu không hợp lệ."),
+      .refine((val) => HEX_COLOR_REGEX.test(val), "Invalid hex color code."),
     status: z.enum(["ACTIVE", "ARCHIVED"]),
     startDate: z
       .string()
       .trim()
       .refine(
         (val) => val === "" || DATE_ONLY_REGEX.test(val),
-        "Ngày bắt đầu không hợp lệ.",
+        "Invalid start date.",
       ),
     dueDate: z
       .string()
       .trim()
       .refine(
         (val) => val === "" || DATE_ONLY_REGEX.test(val),
-        "Hạn hoàn thành không hợp lệ.",
+        "Invalid due date.",
       ),
   })
   .refine(
@@ -42,7 +42,7 @@ export const projectFormSchema = z
       return true;
     },
     {
-      message: "Hạn hoàn thành phải lớn hơn hoặc bằng ngày bắt đầu.",
+      message: "Due date must be on or after the start date.",
       path: ["dueDate"],
     },
   );

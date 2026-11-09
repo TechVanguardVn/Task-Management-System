@@ -4,30 +4,30 @@ export const loginFormSchema = z.object({
   email: z
     .string()
     .trim()
-    .min(1, "Vui lòng nhập địa chỉ email.")
-    .email("Địa chỉ email không hợp lệ."),
+    .min(1, "Email is required.")
+    .email("Please enter a valid email address."),
   password: z
     .string()
-    .min(1, "Vui lòng nhập mật khẩu.")
-    .max(128, "Mật khẩu tối đa 128 ký tự."),
+    .min(1, "Password is required.")
+    .max(128, "Password must be at most 128 characters."),
 });
 
 export const registerFormSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(1, "Vui lòng nhập họ và tên.")
-    .max(120, "Họ và tên tối đa 120 ký tự."),
+    .min(1, "Full name is required.")
+    .max(120, "Full name must be at most 120 characters."),
   email: z
     .string()
     .trim()
-    .min(1, "Vui lòng nhập địa chỉ email.")
-    .max(255, "Địa chỉ email tối đa 255 ký tự.")
-    .email("Địa chỉ email không hợp lệ."),
+    .min(1, "Email is required.")
+    .max(255, "Email must be at most 255 characters.")
+    .email("Please enter a valid email address."),
   password: z
     .string()
-    .min(8, "Mật khẩu cần tối thiểu 8 ký tự.")
-    .max(128, "Mật khẩu tối đa 128 ký tự."),
+    .min(8, "Password must be at least 8 characters.")
+    .max(128, "Password must be at most 128 characters."),
 });
 
 export type LoginFormValues = z.infer<typeof loginFormSchema>;
