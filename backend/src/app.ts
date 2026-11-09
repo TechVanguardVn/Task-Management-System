@@ -2,6 +2,7 @@ import express from "express";
 import { prisma } from "./db";
 import { errorHandler, notFoundHandler } from "./middleware/error.middleware";
 import { authRouter } from "./modules/auth/auth.routes";
+import { dashboardRouter } from "./modules/dashboard/dashboard.routes";
 import { projectsRouter } from "./modules/projects/projects.routes";
 import { tasksRouter } from "./modules/tasks/tasks.routes";
 
@@ -31,6 +32,7 @@ app.get("/api/v1/health", async (_req, res) => {
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/projects", projectsRouter);
 app.use("/api/v1/tasks", tasksRouter);
+app.use("/api/v1/dashboard", dashboardRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
