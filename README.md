@@ -2,7 +2,7 @@
 
 Backend / full-stack developer internship assignment · Estimated time: 2–3 days
 
-**[Live demo on Vercel](https://task-management-system-ten-black.vercel.app)** · [Swagger UI](https://task-management-system-ten-black.vercel.app/api/docs/)
+**[Live demo on Vercel](https://task-management-system-ten-black.vercel.app)** · [Watch the demo on YouTube](https://youtu.be/Zy0XcifNIL4) · [Swagger UI](https://task-management-system-ten-black.vercel.app/api/docs/)
 
 **Demo account**
 
