@@ -2,6 +2,14 @@
 
 Backend / full-stack developer internship assignment · Estimated time: 2–3 days
 
+**[Live demo on Vercel](https://task-management-system-ten-black.vercel.app)** · [Swagger UI](https://task-management-system-ten-black.vercel.app/api/docs/)
+
+**Demo account**
+
+| Email            | Password    |
+| ---------------- | ----------- |
+| `user@gmail.com` | `123456789` |
+
 The assignment brief and submission checklist are in sections 1–5. To run this implementation, start with [Local setup](#6-local-setup). To review it, see the [feature checklist](#7-implemented-features), [backend tests](#9-backend-tests), and [Swagger UI walkthrough](#10-try-the-api-in-swagger-ui).
 
 ## Submission process
@@ -18,12 +26,12 @@ Build a task management application for an individual or a small team. Users sho
 
 ## 2. Functional requirements
 
-| MVP requirement | Expected behavior |
-|---|---|
-| Accounts | Users can register, sign in, and sign out. Store passwords securely and restrict each user to their own data. |
-| Task management | Users can create, view, edit, and delete tasks. Each task has a title, description, status, priority, and due date. Supported statuses are `TODO`, `IN_PROGRESS`, and `DONE`. |
-| Search and filtering | Search by title, filter by status and priority, and paginate large result sets. |
-| Dashboard | Show the total task count, counts for each status, and a list of upcoming deadlines. |
+| MVP requirement      | Expected behavior                                                                                                                                                             |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Accounts             | Users can register, sign in, and sign out. Store passwords securely and restrict each user to their own data.                                                                 |
+| Task management      | Users can create, view, edit, and delete tasks. Each task has a title, description, status, priority, and due date. Supported statuses are `TODO`, `IN_PROGRESS`, and `DONE`. |
+| Search and filtering | Search by title, filter by status and priority, and paginate large result sets.                                                                                               |
+| Dashboard            | Show the total task count, counts for each status, and a list of upcoming deadlines.                                                                                          |
 
 **Optional features** include a Kanban board with drag and drop, Docker Compose, unit or integration tests, Swagger/OpenAPI documentation, a CI pipeline that runs tests on push, and a publicly hosted demo.
 
@@ -92,7 +100,7 @@ Run the seed command against a disposable development database. The seed script 
 npx prisma db seed --config prisma7.config.ts
 ```
 
-To view seeded tasks, open `/login` after starting the app. With the two-account seed, use the credentials defined by `SECOND_USER_EMAIL` and `SECOND_USER_PASSWORD`, then open **Projects → FinTech Personal Expense Tracker**. If the seed prints `Save this generated demo password`, use the email and password printed in the terminal. A newly registered account starts with an empty dashboard because projects belong to their owners. [Seed script](backend/prisma/seed.ts)
+To view seeded tasks, open `/login` after starting the app. With the two-account seed, use the credentials defined by `SECOND_USER_EMAIL` and `SECOND_USER_PASSWORD`, then open **Projects → FinTech Personal Expense Tracker**. A newly registered account starts with an empty dashboard because projects belong to their owners. [Seed script](backend/prisma/seed.ts)
 
 ### Start the application
 
@@ -123,22 +131,23 @@ Keep both terminals running. Open the [local app](http://localhost:5173) or use 
 
 ## 7. Implemented features
 
-| Feature | Implementation | How to verify |
-|---|---|---|
-| Accounts | Registration, login, logout, Argon2id password hashing, and owner-based access. | Create a project as user A, then open its URL as user B. The API rejects the request. |
-| Task management | Create, read, update, and delete tasks with a title, description, status, priority, and due date. | Create a task with **New Task**, select its title to edit it, then delete it from **List**. |
-| Search, filters, and pagination | Search by title, combine status and priority filters, sort, and paginate. | In **List**, search for a title and apply both filters. To check pagination, use a project with at least six tasks and select five tasks per page. |
-| Dashboard | Total tasks, counts by status, progress, and deadlines. | Move a task from **In Progress** to **Done** and verify that both counts change. |
-| Kanban | Drag and drop between three status columns. | Move a card and reload the page to confirm its new status persists. |
-| Projects | Create, edit, delete, archive, and restore projects. Each project has its own statistics. | Open **Overview** to inspect progress or select **Archive** to archive a project. |
-| Backend tests | Unit tests for input validation and HTTP integration tests against PostgreSQL. | Run `npm test` from `backend` using the [test setup](#9-backend-tests). |
-| API documentation | OpenAPI and Swagger UI cover Health, Auth, Projects, Tasks, and Dashboard. | Create and read a task using the [Swagger UI walkthrough](#10-try-the-api-in-swagger-ui). |
+| Feature                         | Implementation                                                                                    | How to verify                                                                                                                                      |
+| ------------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Accounts                        | Registration, login, logout, Argon2id password hashing, and owner-based access.                   | Create a project as user A, then open its URL as user B. The API rejects the request.                                                              |
+| Task management                 | Create, read, update, and delete tasks with a title, description, status, priority, and due date. | Create a task with **New Task**, select its title to edit it, then delete it from **List**.                                                        |
+| Search, filters, and pagination | Search by title, combine status and priority filters, sort, and paginate.                         | In **List**, search for a title and apply both filters. To check pagination, use a project with at least six tasks and select five tasks per page. |
+| Dashboard                       | Total tasks, counts by status, progress, and deadlines.                                           | Move a task from **In Progress** to **Done** and verify that both counts change.                                                                   |
+| Kanban                          | Drag and drop between three status columns.                                                       | Move a card and reload the page to confirm its new status persists.                                                                                |
+| Projects                        | Create, edit, delete, archive, and restore projects. Each project has its own statistics.         | Open **Overview** to inspect progress or select **Archive** to archive a project.                                                                  |
+| Backend tests                   | Unit tests for input validation and HTTP integration tests against PostgreSQL.                    | Run `npm test` from `backend` using the [test setup](#9-backend-tests).                                                                            |
+| API documentation               | OpenAPI and Swagger UI cover Health, Auth, Projects, Tasks, and Dashboard.                        | Create and read a task using the [Swagger UI walkthrough](#10-try-the-api-in-swagger-ui).                                                          |
+| Public deployment               | Vercel serves the frontend and API on one domain.                                                 | Check the [production health endpoint](https://task-management-system-ten-black.vercel.app/api/v1/health) for database connectivity.               |
 
 ### Known limitations and outstanding work
 
 - **Board** loads the first 100 tasks matching the current query. Use **List** to browse additional pages.
 - **Upcoming Deadlines** shows up to eight unfinished tasks, sorted by due date from oldest to newest. Eight overdue tasks can fill the list and hide a task due tomorrow.
-- Docker Compose, a CI test workflow, and a public deployment are outstanding bonus features.
+- Docker Compose and a CI test workflow are outstanding bonus features.
 
 ## 8. Call the API from PowerShell
 
