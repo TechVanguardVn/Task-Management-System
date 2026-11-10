@@ -48,3 +48,5 @@ app.use("/api/v1/dashboard", dashboardRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
+
+export default app;

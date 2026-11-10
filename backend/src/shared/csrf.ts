@@ -2,6 +2,10 @@ import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypt
 
 const CSRF_DOMAIN_KEY = "task-management-system-csrf-v1";
 
+if (process.env.NODE_ENV === "production" && !process.env.CSRF_SECRET?.trim()) {
+  throw new Error("Set CSRF_SECRET in the production environment.");
+}
+
 export function generateRawToken(): string {
   return randomBytes(32).toString("base64url");
 }

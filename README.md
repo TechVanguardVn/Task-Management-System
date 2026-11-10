@@ -78,10 +78,9 @@ DATABASE_URL="postgresql://YOUR_USER:YOUR_PASSWORD@localhost:5432/task_managemen
 
 For Supabase, use the **Session pooler** connection string on port `5432`, following the [environment template](backend/.env.example). URL-encode special characters in the password. Keep the API on port `3000` to match the Vite proxy.
 
-From `backend`, generate the Prisma Client and apply the migrations.
+`npm ci` generates the Prisma Client. From `backend`, apply the migrations to your configured database.
 
 ```powershell
-npx prisma generate --config prisma7.config.ts
 npx prisma migrate deploy --config prisma7.config.ts
 ```
 
@@ -201,3 +200,12 @@ Start the backend and open [Swagger UI](http://localhost:3000/api/docs/). **Exec
 2. Under **Projects**, open `POST /projects`, paste the token into `X-CSRF-Token`, enter a project name, and select **Execute**. Copy `project.id` from the `201` response.
 3. Under **Tasks**, open `POST /projects/{projectId}/tasks`. Enter the project ID, CSRF token, and a task title. Execute the request and copy `task.id`.
 4. Call `GET /tasks/{taskId}` with that ID. The `200` response contains the task you just created. When finished, call `POST /auth/logout` with the CSRF token to end the session.
+
+## 11. Deploy to Vercel
+
+1. Import the Git branch containing the root `vercel.json`. Select **Services** and keep **Root Directory** at `./`. The Vite frontend and Express API share the deployment domain.
+2. In **Environment Variables**, set `DATABASE_URL` to the target Supabase pooler connection string and `CSRF_SECRET` to a stable random value. Generate the secret locally with `node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"`. Use separate database credentials for disposable previews.
+3. From `backend`, with `DATABASE_URL` pointing to the intended database, run `npx prisma migrate status --config prisma7.config.ts`. Apply pending migrations with `npx prisma migrate deploy --config prisma7.config.ts` before using the app.
+4. Click **Deploy**. Open `/api/v1/health` and check for `{"status":"ok","database":"connected"}`. Reload `/login`, sign in, and open `/projects` to check the SPA and session. Swagger UI is at `/api/docs/`.
+
+If a same-origin write returns `CSRF_ORIGIN_MISMATCH`, set `FRONTEND_ORIGIN` to the exact public HTTPS origin (without a trailing slash) for that environment and redeploy.
