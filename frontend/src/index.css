@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas: #f5f7fa;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f8fafc;
+  --color-raised: #ffffff;
+  --color-line: #e2e8f0;
+  --color-line-subtle: #edf1f5;
+  --color-line-strong: #cbd5e1;
+  --color-ink: #17212b;
+  --color-muted: #64748b;
+  --color-subtle: #94a3b8;
+
+  --color-brand: #15803d;
+  --color-brand-bright: #16a34a;
+
+  --color-accent: #ea580c;
+  --color-accent-hover: #c2410c;
+  --color-accent-soft: #fff7ed;
+
+  --color-teal: #0284c7;
+  --color-amber: #d97706;
+
+  --color-danger: #dc2626;
+  --color-danger-strong: #b91c1c;
+  --color-danger-hover: #991b1b;
+  --color-danger-soft: #fef2f2;
+  --color-danger-ink: #b91c1c;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-mono:
+    "SFMono-Regular", "Cascadia Mono", Consolas, "Liberation Mono", Menlo,
+    monospace;
+
+  --text-display: clamp(2.75rem, 7.2vw, 5.75rem);
+  --text-display--line-height: 0.94;
+  --text-display--letter-spacing: -0.05em;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-width: 320px;
+    margin: 0;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: #ffedd5;
+    color: #9a3412;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  .canvas-grid {
+    background-image:
+      linear-gradient(to right, rgb(226 232 240 / 0.8) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(226 232 240 / 0.8) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: linear-gradient(to bottom, black 25%, transparent 90%);
+  }
+}
