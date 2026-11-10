@@ -1,0 +1,776 @@
+openapi: "3.0.3"
+info:
+  title: "Task Management API"
+  version: "1.0.0"
+  description: "Use Auth to register or log in. Your browser keeps the session cookie. Copy csrfToken from the response into X-CSRF-Token when trying a protected write."
+servers:
+  - { url: "/api/v1" }
+tags:
+  - { name: "Health" }
+  - { name: "Auth" }
+  - { name: "Projects" }
+  - { name: "Tasks" }
+  - { name: "Dashboard" }
+security:
+  -
+    session: []
+paths:
+  /health:
+    get:
+      tags: ["Health"]
+      operationId: "health"
+      summary: "Check database connectivity"
+      security: []
+      responses:
+        "200":
+          description: "Check database connectivity"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["status","database"]
+                properties:
+                  status:
+                    type: "string"
+                    enum: ["ok"]
+                  database:
+                    type: "string"
+                    enum: ["connected"]
+        "503":
+          description: "Database unavailable"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["status","database"]
+                properties:
+                  status:
+                    type: "string"
+                    enum: ["error"]
+                  database:
+                    type: "string"
+                    enum: ["unavailable"]
+  /auth/register:
+    post:
+      tags: ["Auth"]
+      operationId: "register"
+      summary: "Register and start a session"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Register" }
+      responses:
+        "201":
+          description: "Register and start a session"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Session" }
+          headers:
+            Set-Cookie:
+              schema: { type: "string" }
+              description: "Sets tms_session (HttpOnly) and tms_csrf."
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /auth/login:
+    post:
+      tags: ["Auth"]
+      operationId: "login"
+      summary: "Log in"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Login" }
+      responses:
+        "200":
+          description: "Log in"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Session" }
+          headers:
+            Set-Cookie:
+              schema: { type: "string" }
+              description: "Sets tms_session (HttpOnly) and tms_csrf."
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /auth/me:
+    get:
+      tags: ["Auth"]
+      operationId: "currentUser"
+      summary: "Get the current session"
+      responses:
+        "200":
+          description: "Get the current session"
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Session" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /auth/csrf:
+    get:
+      tags: ["Auth"]
+      operationId: "getCsrfToken"
+      summary: "Get a CSRF token"
+      security: []
+      responses:
+        "200":
+          description: "Get a CSRF token"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["csrfToken"]
+                properties:
+                  csrfToken: { type: "string" }
+          headers:
+            Set-Cookie:
+              schema: { type: "string" }
+              description: "Sets the readable tms_csrf cookie."
+  /auth/logout:
+    post:
+      tags: ["Auth"]
+      operationId: "logout"
+      summary: "Revoke the session"
+      parameters:
+        - { $ref: "#/components/parameters/CsrfToken" }
+      responses:
+        "200":
+          description: "Revoke the session"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["status"]
+                properties:
+                  status:
+                    type: "string"
+                    enum: ["ok"]
+          headers:
+            Set-Cookie:
+              schema: { type: "string" }
+              description: "Expires both session and CSRF cookies."
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects:
+    get:
+      tags: ["Projects"]
+      operationId: "listProjects"
+      summary: "List owned projects"
+      parameters:
+        -
+          name: "status"
+          in: "query"
+          schema: { $ref: "#/components/schemas/ProjectStatus" }
+        -
+          name: "search"
+          in: "query"
+          schema: { type: "string", maxLength: 200 }
+        -
+          name: "sortBy"
+          in: "query"
+          schema:
+            type: "string"
+            enum: ["updatedAt","createdAt","name","dueDate"]
+            default: "updatedAt"
+        -
+          name: "sortOrder"
+          in: "query"
+          schema:
+            type: "string"
+            enum: ["asc","desc"]
+            default: "desc"
+      responses:
+        "200":
+          description: "List owned projects"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["projects","meta"]
+                properties:
+                  projects:
+                    type: "array"
+                    items: { $ref: "#/components/schemas/Project" }
+                  meta:
+                    type: "object"
+                    required: ["total","activeCount","archivedCount"]
+                    properties:
+                      total: { type: "integer" }
+                      activeCount: { type: "integer" }
+                      archivedCount: { type: "integer" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    post:
+      tags: ["Projects"]
+      operationId: "createProject"
+      summary: "Create a project"
+      parameters:
+        - { $ref: "#/components/parameters/CsrfToken" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateProject" }
+            example: { name: "Release review" }
+      responses:
+        "201":
+          description: "Create a project"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["project"]
+                properties:
+                  project: { $ref: "#/components/schemas/Project" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /projects/{projectId}:
+    parameters:
+      -
+        name: "projectId"
+        in: "path"
+        required: true
+        schema: { type: "string", format: "uuid" }
+    get:
+      tags: ["Projects"]
+      operationId: "getProject"
+      summary: "Read a project and its statistics"
+      responses:
+        "200":
+          description: "Read a project and its statistics"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["project"]
+                properties:
+                  project: { $ref: "#/components/schemas/Project" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      tags: ["Projects"]
+      operationId: "updateProject"
+      summary: "Edit or archive a project"
+      parameters:
+        - { $ref: "#/components/parameters/CsrfToken" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateProject" }
+      responses:
+        "200":
+          description: "Edit or archive a project"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["project"]
+                properties:
+                  project: { $ref: "#/components/schemas/Project" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      tags: ["Projects"]
+      operationId: "deleteProject"
+      summary: "Delete a project and its tasks"
+      parameters:
+        - { $ref: "#/components/parameters/CsrfToken" }
+      responses:
+        "200":
+          description: "Delete a project and its tasks"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["status","projectId"]
+                properties:
+                  status:
+                    type: "string"
+                    enum: ["deleted"]
+                  projectId: { type: "string", format: "uuid" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/summary:
+    parameters:
+      -
+        name: "projectId"
+        in: "path"
+        required: true
+        schema: { type: "string", format: "uuid" }
+    get:
+      tags: ["Projects"]
+      operationId: "projectSummary"
+      summary: "Get project overview and task summaries"
+      responses:
+        "200":
+          description: "Get project overview and task summaries"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["summary"]
+                properties:
+                  summary: { $ref: "#/components/schemas/ProjectSummary" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /projects/{projectId}/tasks:
+    parameters:
+      -
+        name: "projectId"
+        in: "path"
+        required: true
+        schema: { type: "string", format: "uuid" }
+    get:
+      tags: ["Tasks"]
+      operationId: "listTasks"
+      summary: "Search, filter and paginate tasks in a project"
+      parameters:
+        -
+          name: "search"
+          in: "query"
+          schema: { type: "string", maxLength: 200 }
+        -
+          name: "status"
+          in: "query"
+          schema: { $ref: "#/components/schemas/TaskStatus" }
+        -
+          name: "priority"
+          in: "query"
+          schema: { $ref: "#/components/schemas/Priority" }
+        -
+          name: "sortBy"
+          in: "query"
+          schema:
+            type: "string"
+            enum: ["createdAt","updatedAt","dueDate","priority","title"]
+            default: "createdAt"
+        -
+          name: "sortOrder"
+          in: "query"
+          schema:
+            type: "string"
+            enum: ["asc","desc"]
+            default: "desc"
+        -
+          name: "page"
+          in: "query"
+          schema: { type: "integer", minimum: 1, default: 1 }
+        -
+          name: "limit"
+          in: "query"
+          schema: { type: "integer", minimum: 1, maximum: 100, default: 10 }
+      responses:
+        "200":
+          description: "Search, filter and paginate tasks in a project"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["tasks","pagination"]
+                properties:
+                  tasks:
+                    type: "array"
+                    items: { $ref: "#/components/schemas/Task" }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      tags: ["Tasks"]
+      operationId: "createTask"
+      summary: "Create a task in an active project"
+      parameters:
+        - { $ref: "#/components/parameters/CsrfToken" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateTask" }
+            example: { title: "Review checkout", priority: "HIGH" }
+      responses:
+        "201":
+          description: "Create a task in an active project"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["task"]
+                properties:
+                  task: { $ref: "#/components/schemas/Task" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /tasks/{taskId}:
+    parameters:
+      -
+        name: "taskId"
+        in: "path"
+        required: true
+        schema: { type: "string", format: "uuid" }
+    get:
+      tags: ["Tasks"]
+      operationId: "getTask"
+      summary: "Read a task"
+      responses:
+        "200":
+          description: "Read a task"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["task"]
+                properties:
+                  task: { $ref: "#/components/schemas/Task" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      tags: ["Tasks"]
+      operationId: "updateTask"
+      summary: "Edit a task"
+      parameters:
+        - { $ref: "#/components/parameters/CsrfToken" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateTask" }
+            example: { status: "DONE" }
+      responses:
+        "200":
+          description: "Edit a task"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["task"]
+                properties:
+                  task: { $ref: "#/components/schemas/Task" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+    delete:
+      tags: ["Tasks"]
+      operationId: "deleteTask"
+      summary: "Delete a task"
+      parameters:
+        - { $ref: "#/components/parameters/CsrfToken" }
+      responses:
+        "200":
+          description: "Delete a task"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["status","taskId"]
+                properties:
+                  status:
+                    type: "string"
+                    enum: ["deleted"]
+                  taskId: { type: "string", format: "uuid" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /dashboard/summary:
+    get:
+      tags: ["Dashboard"]
+      operationId: "dashboardSummary"
+      summary: "Get totals and up to six projects"
+      responses:
+        "200":
+          description: "Get totals and up to six projects"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["metrics","projects"]
+                properties:
+                  metrics: { $ref: "#/components/schemas/Metrics" }
+                  projects:
+                    type: "array"
+                    items: { $ref: "#/components/schemas/Project" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /dashboard/upcoming-tasks:
+    get:
+      tags: ["Dashboard"]
+      operationId: "upcomingTasks"
+      summary: "List unfinished tasks by due date, including overdue tasks"
+      parameters:
+        -
+          name: "limit"
+          in: "query"
+          schema: { type: "integer", minimum: 1, maximum: 50, default: 8 }
+      responses:
+        "200":
+          description: "List unfinished tasks by due date, including overdue tasks"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                required: ["tasks","meta"]
+                properties:
+                  tasks:
+                    type: "array"
+                    items: { $ref: "#/components/schemas/UpcomingTask" }
+                  meta:
+                    type: "object"
+                    required: ["total","overdueCount","limit"]
+                    properties:
+                      total: { type: "integer" }
+                      overdueCount: { type: "integer" }
+                      limit: { type: "integer" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+components:
+  securitySchemes:
+    session:
+      type: "apiKey"
+      in: "cookie"
+      name: "tms_session"
+      description: "HttpOnly session cookie set by register or login."
+  parameters:
+    CsrfToken:
+      in: "header"
+      name: "X-CSRF-Token"
+      required: true
+      schema: { type: "string" }
+      description: "Value of csrfToken returned by login, register or GET /auth/me."
+  schemas:
+    TaskStatus:
+      type: "string"
+      enum: ["TODO","IN_PROGRESS","DONE"]
+    Priority:
+      type: "string"
+      enum: ["LOW","MEDIUM","HIGH"]
+    ProjectStatus:
+      type: "string"
+      enum: ["ACTIVE","ARCHIVED"]
+    Register:
+      type: "object"
+      required: ["name","email","password"]
+      properties:
+        name: { type: "string", minLength: 1, maxLength: 120 }
+        email: { type: "string", format: "email", maxLength: 255 }
+        password: { type: "string", format: "password", minLength: 8, maxLength: 128 }
+    Login:
+      type: "object"
+      required: ["email","password"]
+      properties:
+        email: { type: "string", format: "email" }
+        password: { type: "string", format: "password", minLength: 1, maxLength: 128 }
+    User:
+      type: "object"
+      required: ["id","email","name","createdAt","updatedAt"]
+      properties:
+        id: { type: "string", format: "uuid" }
+        email: { type: "string", format: "email" }
+        name: { type: "string" }
+        createdAt: { type: "string", format: "date-time" }
+        updatedAt: { type: "string", format: "date-time" }
+    Session:
+      type: "object"
+      required: ["user","csrfToken"]
+      properties:
+        user: { $ref: "#/components/schemas/User" }
+        csrfToken: { type: "string" }
+    CreateProject:
+      type: "object"
+      required: ["name"]
+      properties:
+        name: { type: "string", minLength: 1, maxLength: 120 }
+        description: { type: "string", nullable: true, maxLength: 2000 }
+        color: { type: "string", nullable: true, pattern: "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$" }
+        startDate: { type: "string", format: "date", nullable: true }
+        dueDate: { type: "string", format: "date", nullable: true }
+    UpdateProject:
+      type: "object"
+      properties:
+        name: { type: "string", minLength: 1, maxLength: 120 }
+        description: { type: "string", nullable: true, maxLength: 2000 }
+        color: { type: "string", nullable: true, pattern: "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$" }
+        startDate: { type: "string", format: "date", nullable: true }
+        dueDate: { type: "string", format: "date", nullable: true }
+        status: { $ref: "#/components/schemas/ProjectStatus" }
+      minProperties: 1
+    ProjectStats:
+      type: "object"
+      required: ["totalTasks","todoTasks","inProgressTasks","doneTasks","overdueTasks","progress"]
+      properties:
+        totalTasks: { type: "integer" }
+        todoTasks: { type: "integer" }
+        inProgressTasks: { type: "integer" }
+        doneTasks: { type: "integer" }
+        overdueTasks: { type: "integer" }
+        progress: { type: "integer" }
+    Project:
+      type: "object"
+      required: ["id","ownerId","name","description","color","status","startDate","dueDate","createdAt","updatedAt","stats"]
+      properties:
+        id: { type: "string", format: "uuid" }
+        ownerId: { type: "string", format: "uuid" }
+        name: { type: "string" }
+        description: { type: "string", nullable: true }
+        color: { type: "string", nullable: true }
+        status: { $ref: "#/components/schemas/ProjectStatus" }
+        startDate: { type: "string", format: "date", nullable: true }
+        dueDate: { type: "string", format: "date", nullable: true }
+        createdAt: { type: "string", format: "date-time" }
+        updatedAt: { type: "string", format: "date-time" }
+        stats: { $ref: "#/components/schemas/ProjectStats" }
+    ProjectSummary:
+      type: "object"
+      required: ["project","upcomingTasks","recentTasks"]
+      properties:
+        project: { $ref: "#/components/schemas/Project" }
+        upcomingTasks:
+          type: "array"
+          items: { $ref: "#/components/schemas/SummaryTask" }
+        recentTasks:
+          type: "array"
+          items: { $ref: "#/components/schemas/SummaryTask" }
+    SummaryTask:
+      type: "object"
+      required: ["id","title","status","priority","dueDate","completedAt","updatedAt"]
+      properties:
+        id: { type: "string", format: "uuid" }
+        title: { type: "string" }
+        status: { $ref: "#/components/schemas/TaskStatus" }
+        priority: { $ref: "#/components/schemas/Priority" }
+        dueDate: { type: "string", format: "date", nullable: true }
+        completedAt: { type: "string", format: "date-time", nullable: true }
+        updatedAt: { type: "string", format: "date-time" }
+    CreateTask:
+      type: "object"
+      required: ["title"]
+      properties:
+        title: { type: "string", minLength: 1, maxLength: 200 }
+        description: { type: "string", nullable: true, maxLength: 4000 }
+        status: { $ref: "#/components/schemas/TaskStatus" }
+        priority: { $ref: "#/components/schemas/Priority" }
+        dueDate: { type: "string", format: "date", nullable: true }
+      additionalProperties: false
+      description: "Status defaults to TODO and priority to MEDIUM."
+    UpdateTask:
+      type: "object"
+      properties:
+        title: { type: "string", minLength: 1, maxLength: 200 }
+        description: { type: "string", nullable: true, maxLength: 4000 }
+        status: { $ref: "#/components/schemas/TaskStatus" }
+        priority: { $ref: "#/components/schemas/Priority" }
+        dueDate: { type: "string", format: "date", nullable: true }
+      additionalProperties: false
+      minProperties: 1
+    Task:
+      type: "object"
+      required: ["id","title","status","priority","dueDate","completedAt","updatedAt","projectId","description","createdAt"]
+      properties:
+        id: { type: "string", format: "uuid" }
+        title: { type: "string" }
+        status: { $ref: "#/components/schemas/TaskStatus" }
+        priority: { $ref: "#/components/schemas/Priority" }
+        dueDate: { type: "string", format: "date", nullable: true }
+        completedAt: { type: "string", format: "date-time", nullable: true }
+        updatedAt: { type: "string", format: "date-time" }
+        projectId: { type: "string", format: "uuid" }
+        description: { type: "string", nullable: true }
+        createdAt: { type: "string", format: "date-time" }
+    Pagination:
+      type: "object"
+      required: ["page","limit","total","totalPages"]
+      properties:
+        page: { type: "integer" }
+        limit: { type: "integer" }
+        total: { type: "integer" }
+        totalPages: { type: "integer" }
+    Metrics:
+      type: "object"
+      required: ["totalProjects","activeProjects","archivedProjects","totalTasks","todoTasks","inProgressTasks","doneTasks","overdueTasks","overallProgress"]
+      properties:
+        totalProjects: { type: "integer" }
+        activeProjects: { type: "integer" }
+        archivedProjects: { type: "integer" }
+        totalTasks: { type: "integer" }
+        todoTasks: { type: "integer" }
+        inProgressTasks: { type: "integer" }
+        doneTasks: { type: "integer" }
+        overdueTasks: { type: "integer" }
+        overallProgress: { type: "integer" }
+    UpcomingTask:
+      type: "object"
+      required: ["id","projectId","title","description","status","priority","dueDate","isOverdue","createdAt","updatedAt","project"]
+      properties:
+        id: { type: "string", format: "uuid" }
+        projectId: { type: "string", format: "uuid" }
+        title: { type: "string" }
+        description: { type: "string", nullable: true }
+        status: { $ref: "#/components/schemas/TaskStatus" }
+        priority: { $ref: "#/components/schemas/Priority" }
+        dueDate: { type: "string", format: "date" }
+        isOverdue: { type: "boolean" }
+        createdAt: { type: "string", format: "date-time" }
+        updatedAt: { type: "string", format: "date-time" }
+        project:
+          type: "object"
+          required: ["id","name","color","status"]
+          properties:
+            id: { type: "string", format: "uuid" }
+            name: { type: "string" }
+            color: { type: "string", nullable: true }
+            status: { $ref: "#/components/schemas/ProjectStatus" }
+    ApiError:
+      type: "object"
+      required: ["error"]
+      properties:
+        error:
+          type: "object"
+          required: ["code","message"]
+          properties:
+            code: { type: "string" }
+            message: { type: "string" }
+            details:
+              type: "array"
+              items:
+                type: "object"
+                required: ["field","message"]
+                properties:
+                  field: { type: "string" }
+                  message: { type: "string" }
+  responses:
+    BadRequest:
+      description: "Invalid input or malformed JSON"
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+    Unauthorized:
+      description: "Missing or expired session, or invalid credentials"
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+    Forbidden:
+      description: "Invalid origin or CSRF token"
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+    NotFound:
+      description: "Resource not found for this user"
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+    Conflict:
+      description: "Email already registered or project archived"
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }

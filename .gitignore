@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.*
+!.env.example
+!/backend/.env.test.example
+
+# Private keys and certificate bundles
+/backend/certs/
+*.key
+*.p12
+*.pfx
+
+# Build output and caches
+dist/
+dist-ssr/
+coverage/
+*.tsbuildinfo
+.vite/
+
+# Generated Prisma Client
+/backend/src/generated/prisma/
+
+# Logs
+logs/
+*.log
+
+# Local editor and operating system files
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
