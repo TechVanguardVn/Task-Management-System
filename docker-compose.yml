@@ -1,0 +1,52 @@
+# Khởi chạy toàn bộ ứng dụng:  docker compose up --build
+#   Frontend : http://localhost:8080
+#   API      : http://localhost:4000/api   (Swagger: /api/docs)
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: taskflow
+      POSTGRES_PASSWORD: taskflow
+      POSTGRES_DB: taskflow
+      # ICU locale: tìm kiếm không phân biệt hoa/thường đúng với tiếng Việt
+      POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale-provider=icu --icu-locale=und --locale=C
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskflow -d taskflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://taskflow:taskflow@db:5432/taskflow?schema=public
+      # Giá trị mặc định chỉ dành cho chạy thử local. Khi deploy hãy đặt biến môi trường JWT_SECRET.
+      JWT_SECRET: ${JWT_SECRET:-local-docker-demo-secret-please-change-0123456789}
+      CORS_ORIGIN: http://localhost:8080
+      SESSION_TTL_HOURS: 24
+      BCRYPT_ROUNDS: 12
+      SEED_ON_START: ${SEED_ON_START:-true}
+    ports:
+      - "4000:4000"
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  pgdata:
