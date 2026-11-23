@@ -4,13 +4,18 @@
 - Vị trí ứng tuyển – Fullstack Developer Intern
 - Repository (fork) – https://github.com/tuanthanhne935-dev/Task-Management-System (nhánh `dev`)
 
-## 2. Demo & tài liệu
+## 2. Live Demo & tài liệu
+Ứng dụng đã được triển khai trên Render (frontend và backend API trên cùng một domain).
+
+- Live Demo – https://taskflow-jbw7.onrender.com
+- Swagger UI – https://taskflow-jbw7.onrender.com/api/docs
+- API Health Check – https://taskflow-jbw7.onrender.com/api/health
 - Video demo – _(đang cập nhật)_
 - README (hướng dẫn đầy đủ) – https://github.com/tuanthanhne935-dev/Task-Management-System/blob/dev/README.md
-- Chạy toàn bộ bằng 1 lệnh – `docker compose up --build`, rồi mở
-  - Ứng dụng – http://localhost:8080
-  - Swagger UI – http://localhost:4000/api/docs
-  - Health check – http://localhost:4000/api/health
+
+Gói miễn phí của Render tạm dừng khi không có truy cập, nên lần mở đầu tiên có thể mất khoảng 1 phút để khởi động.
+
+Chạy local bằng 1 lệnh – `docker compose up --build`, rồi mở http://localhost:8080 (Swagger – http://localhost:4000/api/docs).
 
 | Email | Mật khẩu | Ghi chú |
 |---|---|---|
@@ -50,7 +55,7 @@ Ngoài các chức năng bắt buộc, em tập trung vào tính đúng đắn c
 - [x] Swagger / OpenAPI.
 - [x] CI pipeline (GitHub Actions) – typecheck, test, build cho backend và frontend mỗi lần push / PR.
 - [x] Giao diện responsive – desktop, tablet, mobile.
-- [ ] Deploy demo lên cloud – chưa thực hiện.
+- [x] Deploy demo lên cloud – Render (https://taskflow-jbw7.onrender.com), cấu hình bằng `render.yaml`.
 
 ### C. Bảo mật & chất lượng dữ liệu
 - Đăng xuất thu hồi phiên phía server – token cũ bị vô hiệu ngay dù chưa hết hạn.
@@ -91,7 +96,7 @@ npm run dev            # http://localhost:5173
 ```
 
 ## 8. Giới hạn hiện tại & phần chưa làm
-- Chưa deploy lên cloud; hiện chạy local hoặc bằng Docker Compose.
+- Bản demo dùng gói miễn phí của Render – service tạm dừng khi không có truy cập (lần mở đầu chậm ~1 phút), dữ liệu demo được seed lại mỗi lần khởi động.
 - Ứng dụng dành cho cá nhân, chưa có chế độ nhóm (project, thành viên, giao việc).
 - Token lưu ở `localStorage`; hướng cải thiện là refresh token và cookie `httpOnly`.
 - Kanban tải tối đa 1.000 task mỗi lần; Dashboard hiển thị tối đa 10 task sắp đến hạn và 10 task quá hạn.
@@ -104,6 +109,7 @@ npm run dev            # http://localhost:5173
 - [x] Database migration và dữ liệu mẫu (seed)
 - [x] Tài liệu API (Swagger / OpenAPI)
 - [x] Danh sách chức năng đã hoàn thành và chưa hoàn thành
+- [x] Public deployment trên Render
 - [ ] Video demo _(đang cập nhật)_
 
 ---

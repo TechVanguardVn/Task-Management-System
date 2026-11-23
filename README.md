@@ -11,6 +11,8 @@ Mini project cho vị trí **Backend / Fullstack Developer**. Ứng dụng cho p
 
 Đề bài gốc: [`docs/DE_BAI.md`](docs/DE_BAI.md) · Giao diện tham khảo: [`images/demo.jpeg`](images/demo.jpeg)
 
+**Live demo:** https://taskflow-jbw7.onrender.com · Swagger: https://taskflow-jbw7.onrender.com/api/docs
+
 Tài khoản demo (sau khi seed): **`demo@taskflow.dev` / `Demo@1234`** (thêm `alice@taskflow.dev` / `Alice@1234` để thử phân quyền dữ liệu).
 
 ---
@@ -48,10 +50,10 @@ Tài khoản demo (sau khi seed): **`demo@taskflow.dev` / `Demo@1234`** (thêm `
 | **Integration test** | 32 test: auth, phân quyền, CRUD, validate, tìm kiếm/lọc/phân trang, Kanban, dashboard, ràng buộc DB. |
 | **Swagger / OpenAPI** | `http://localhost:4000/api/docs` |
 | **CI pipeline** | GitHub Actions: typecheck + test (với Postgres service) + build cho cả backend và frontend mỗi lần push/PR. |
+| **Deploy demo** | Render (gói miễn phí): https://taskflow-jbw7.onrender.com, cấu hình bằng [`render.yaml`](render.yaml). |
 | **Giao diện responsive** | Desktop, tablet, mobile (sidebar dạng menu trượt, Kanban cuộn ngang). |
 
 ### ⏳ Chưa hoàn thành / hướng phát triển
-- **Deploy demo lên cloud**: chưa thực hiện. Ứng dụng đã đóng gói Docker nên có thể deploy lên Render / Railway / Fly.io / VPS.
 - Quản lý **nhóm nhỏ** (chia sẻ project, giao task cho thành viên): schema hiện tại thiết kế cho cá nhân; có thể mở rộng bằng bảng `projects` + `project_members`.
 - Refresh token + lưu token trong cookie `httpOnly` (hiện dùng access token + session thu hồi được, token lưu ở `localStorage`).
 - Unit test cho frontend (hiện mới có integration test phía backend).
