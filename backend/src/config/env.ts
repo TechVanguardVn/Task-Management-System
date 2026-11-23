@@ -9,6 +9,8 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(32, 'JWT_SECRET phải dài ít nhất 32 ký tự'),
   SESSION_TTL_HOURS: z.coerce.number().positive().default(24),
   BCRYPT_ROUNDS: z.coerce.number().int().min(4).max(15).default(12),
+  /** Thư mục build của frontend (mặc định ../frontend/dist) */
+  FRONTEND_DIST: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

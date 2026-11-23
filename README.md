@@ -113,6 +113,16 @@ npm run db:local              # giữ terminal này mở, Postgres chạy ở c�
 
 Sau đó ở terminal khác làm tiếp từ bước `npm run db:migrate` của Cách 2.
 
+### Deploy lên Render (link demo công khai)
+
+Repo có sẵn [`render.yaml`](render.yaml) (Render Blueprint): 1 database PostgreSQL + 1 web service. Backend phục vụ luôn bản build của frontend nên cả giao diện, API và Swagger dùng chung một domain.
+
+1. Đăng nhập https://dashboard.render.com bằng GitHub.
+2. **New → Blueprint**, chọn repo này và nhánh chứa code, bấm **Apply**.
+3. Đợi build xong (~5–10 phút), mở link `https://<tên-service>.onrender.com`.
+
+Lưu ý gói miễn phí: service "ngủ" sau ~15 phút không có truy cập (lần mở đầu tiên mất ~1 phút để khởi động); database miễn phí có thời hạn sử dụng theo chính sách của Render. Dữ liệu demo được seed lại mỗi lần service khởi động.
+
 > **Windows:** nếu đường dẫn thư mục dự án quá dài (> ~200 ký tự), Windows không nạp được DLL của Postgres (giới hạn MAX_PATH 260 ký tự). Hãy đặt dự án ở đường dẫn ngắn, ví dụ `C:\dev\taskflow`.
 
 ---

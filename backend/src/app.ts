@@ -35,7 +35,26 @@ export function createApp() {
   app.use('/api/tasks', taskRouter);
   app.use('/api/dashboard', dashboardRouter);
 
+  serveFrontend(app);
+
   app.use(notFoundHandler);
   app.use(errorHandler);
   return app;
+}
+
+/**
+ * Deploy 1 dịch vụ (vd. Render): nếu có bản build của frontend thì API phục vụ luôn
+ * giao diện trên cùng domain. Docker Compose / dev không có thư mục này nên bỏ qua.
+ */
+function serveFrontend(app: express.Express) {
+  const dist = env.FRONTEND_DIST ?? path.resolve(__dirname, '..', '..', 'frontend', 'dist');
+  const indexHtml = path.join(dist, 'index.html');
+  if (env.isTest || !fs.existsSync(indexHtml)) return;
+
+  app.use(express.static(dist, { index: false, maxAge: '1h' }));
+  // SPA fallback cho React Router (mọi GET không phải /api)
+  app.use((req, res, next) => {
+    if (req.method !== 'GET' || req.path.startsWith('/api')) return next();
+    res.sendFile(indexHtml);
+  });
 }
