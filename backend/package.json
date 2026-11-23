@@ -1,0 +1,66 @@
+{
+  "name": "taskflow-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Taskflow - REST API quản lý công việc (Express + Prisma + PostgreSQL)",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.build.json && node -e \"require('fs').cpSync('src/docs','dist/docs',{recursive:true})\"",
+    "start": "node dist/server.js",
+    "db:local": "tsx scripts/local-db.ts",
+    "db:migrate": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset --force",
+    "prisma:generate": "prisma generate",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.5",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "swagger-ui-express": "^5.0.1",
+    "yaml": "^2.9.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.19.2",
+    "@types/supertest": "^7.2.1",
+    "@types/swagger-ui-express": "^4.1.8",
+    "embedded-postgres": "^18.7.0-beta.19",
+    "prisma": "^6.19.3",
+    "supertest": "^7.3.2",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9",
+    "vitest": "^5.1.1"
+  },
+  "allowScripts": {
+    "prisma": true,
+    "@prisma/client": true,
+    "@prisma/engines": true,
+    "esbuild": true,
+    "@embedded-postgres/windows-x64": true,
+    "@embedded-postgres/linux-x64": true,
+    "@embedded-postgres/linux-arm64": true,
+    "@embedded-postgres/darwin-x64": true,
+    "@embedded-postgres/darwin-arm64": true,
+    "@scarf/scarf": false
+  }
+}
