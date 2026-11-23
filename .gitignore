@@ -1,0 +1,22 @@
+node_modules/
+dist/
+coverage/
+*.log
+*.tsbuildinfo
+
+# env - chỉ commit .env.example
+.env
+.env.*
+!.env.example
+
+# PostgreSQL nhúng (npm run db:local)
+backend/.local-pg/
+
+# editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# cấu hình riêng của Claude Code trên máy dev
+.claude/

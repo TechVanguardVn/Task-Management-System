@@ -1,0 +1,75 @@
+// Taskflow - database schema
+// Ràng buộc CHECK (độ dài tiêu đề, định dạng email, vị trí >= 0...) được bổ sung
+// trực tiếp trong file migration SQL vì Prisma chưa hỗ trợ khai báo CHECK.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique @db.VarChar(255)
+  name         String    @db.VarChar(100)
+  passwordHash String    @map("password_hash") @db.VarChar(255)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  tasks        Task[]
+  sessions     Session[]
+
+  @@map("users")
+}
+
+/// Mỗi lần đăng nhập tạo 1 session. JWT mang session id (sid) để có thể
+/// thu hồi token phía server khi đăng xuất.
+model Session {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent String?   @map("user_agent") @db.VarChar(255)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(3)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(3)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Task {
+  id          String       @id @default(uuid()) @db.Uuid
+  userId      String       @map("user_id") @db.Uuid
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String       @db.VarChar(200)
+  description String?      @db.Text
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(MEDIUM)
+  dueDate     DateTime?    @map("due_date") @db.Timestamptz(3)
+  tags        String[]     @default([]) @db.VarChar(30)
+  /// Thứ tự hiển thị trong cột Kanban (0 = trên cùng)
+  position    Int          @default(0)
+  completedAt DateTime?    @map("completed_at") @db.Timestamptz(3)
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([userId, status, position])
+  @@index([userId, priority])
+  @@index([userId, dueDate])
+  @@map("tasks")
+}
