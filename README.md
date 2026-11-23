@@ -31,7 +31,7 @@ Tài khoản demo (sau khi seed): **`demo@taskflow.dev` / `Demo@1234`** (thêm `
 
 ## 1. Chức năng
 
-### ✅ Đã hoàn thành: chức năng bắt buộc (MVP)
+### Đã hoàn thành: chức năng bắt buộc (MVP)
 
 | Nhóm | Chi tiết |
 |---|---|
@@ -41,19 +41,19 @@ Tài khoản demo (sau khi seed): **`demo@taskflow.dev` / `Demo@1234`** (thêm `
 | **Tìm kiếm & lọc** | Tìm theo tiêu đề (không phân biệt hoa thường, hỗ trợ tiếng Việt có dấu); lọc theo trạng thái và ưu tiên (chọn được nhiều giá trị); sắp xếp theo ngày tạo / hạn / ưu tiên / tên; **phân trang** phía server. |
 | **Dashboard** | Tổng số task, số task chưa bắt đầu / đang làm / đã xong, tỉ lệ hoàn thành, số task quá hạn, **danh sách sắp đến hạn** (chọn 3/7/14/30 ngày), danh sách quá hạn, phân bố task còn mở theo ưu tiên. |
 
-### ✅ Đã hoàn thành: chức năng cộng điểm
+### Đã hoàn thành: chức năng cộng điểm
 
 | Chức năng | Ghi chú |
 |---|---|
 | **Kanban kéo thả** | Kéo thẻ giữa các cột và sắp xếp lại trong cột (dnd-kit, hỗ trợ cả bàn phím). Thứ tự được lưu vào DB (`position`), cập nhật optimistic và hoàn tác nếu API lỗi. Kéo thả đúng cả khi board đang lọc. |
 | **Docker Compose** | `docker compose up --build` chạy PostgreSQL + API + frontend (nginx), tự migrate và seed. |
 | **Integration test** | 32 test: auth, phân quyền, CRUD, validate, tìm kiếm/lọc/phân trang, Kanban, dashboard, ràng buộc DB. |
-| **Swagger / OpenAPI** | `http://localhost:4000/api/docs` |
+| **Swagger / OpenAPI** | https://taskflow-jbw7.onrender.com/api/docs (local: `http://localhost:4000/api/docs`) |
 | **CI pipeline** | GitHub Actions: typecheck + test (với Postgres service) + build cho cả backend và frontend mỗi lần push/PR. |
 | **Deploy demo** | Render (gói miễn phí): https://taskflow-jbw7.onrender.com, cấu hình bằng [`render.yaml`](render.yaml). |
 | **Giao diện responsive** | Desktop, tablet, mobile (sidebar dạng menu trượt, Kanban cuộn ngang). |
 
-### ⏳ Chưa hoàn thành / hướng phát triển
+### Chưa hoàn thành / hướng phát triển
 - Quản lý **nhóm nhỏ** (chia sẻ project, giao task cho thành viên): schema hiện tại thiết kế cho cá nhân; có thể mở rộng bằng bảng `projects` + `project_members`.
 - Refresh token + lưu token trong cookie `httpOnly` (hiện dùng access token + session thu hồi được, token lưu ở `localStorage`).
 - Unit test cho frontend (hiện mới có integration test phía backend).
