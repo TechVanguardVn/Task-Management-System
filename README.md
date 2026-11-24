@@ -1,90 +1,179 @@
-# Đề bài tuyển dụng Intern: Task Management System
+# Task Management System (Hệ thống Quản lý Công việc Doanh nghiệp)
 
-Mini Project · Backend / Fullstack Developer · Thời gian: 2–3 ngày
+> **Ứng viên**: Lê Hữu Văn (GitHub: [@vanlh25](https://github.com/vanlh25))  
+> **Dự án**: TechVanguard Recruitment Technical Assessment  
+> **Kiến trúc**: Enterprise Full-Stack (Spring Boot 3 + React 18 TypeScript + PostgreSQL + Redis + Docker)  
 
-## Quy trình làm bài 
+---
 
-Quy trình làm bài: 
-- Fork repo về sau đó làm bài trên repo đó
-- Sau khi làm bài xong tạo Pull request vào Repo gốc
-- Gửi link PR và mô tả lại bài làm để nộp bài
+## 1. Giới thiệu tổng quan (Overview)
 
-![Kanban Project Management Dashboard UI for SaaS Platform by Creliq UX/UI Design Agency on Dribbble](https://raw.githubusercontent.com/TechVanguardVn/Task-Management-System/refs/heads/main/images/demo.jpeg)
+**Task Management System** là nền tảng quản lý công việc và quy trình tác nghiệp chuẩn doanh nghiệp, được thiết kế theo mô hình **Strict Layered Architecture** (Phân tầng nghiêm ngặt) ở Backend và **Feature-driven Architecture** ở Frontend.
 
-## 1. Mục tiêu dự án
+Hệ thống cung cấp giải pháp toàn diện từ quản lý vòng đời công việc, bảng kéo thả Kanban trực quan, checklist đầu việc con (Subtasks), nhật ký hoạt động thời gian thực (Activity Audit Log), báo cáo số liệu năng suất (Productivity Dashboard có đệm Redis Cache), đến cơ chế trích xuất dữ liệu đa định dạng (CSV chuẩn UTF-8 BOM và JSON).
 
-Xây dựng một ứng dụng quản lý công việc cá nhân hoặc nhóm nhỏ, cho phép người dùng tạo, cập nhật, theo dõi tiến độ và quản lý các công việc của mình.
+---
 
-Ứng viên được tự chọn công nghệ phù hợp với vị trí ứng tuyển. Dự án cần có source code, database, tài liệu hướng dẫn chạy và API nếu có Backend.
+## 2. Công nghệ sử dụng (Tech Stack)
 
-## 2. Yêu cầu chức năng
+### Backend
+- **Ngôn ngữ & Runtime**: Java 21 (LTS)
+- **Framework**: Spring Boot 3.3.5
+- **Bảo mật**: Spring Security 6, Stateless JWT (HMAC-SHA256, 256-bit secret), BCrypt Password Hashing (Strength 12)
+- **Cơ sở dữ liệu & ORM**: Spring Data JPA, Hibernate 6, H2 Database (in-memory test/dev), PostgreSQL 16 (production)
+- **Bộ nhớ đệm & Chống brute-force**: Redis 7 (Spring Data Redis), CacheManager, Token Blacklist, Rate Limiting (5 attempts/phút)
+- **Tài liệu hóa API**: SpringDoc OpenAPI 3 / Swagger UI (v2.6.0)
+- **Kiểm thử tự động**: JUnit 5, Mockito 5, AssertJ
 
-### A. Chức năng bắt buộc (MVP)
+### Frontend
+- **Thư viện UI**: React 18
+- **Ngôn ngữ**: TypeScript 5 (Strict Mode bật toàn diện, 0 lỗi `any`)
+- **Build Tool**: Vite 5
+- **Định dạng & Thiết kế**: Tailwind CSS 3, Lucide React Icons
+- **Tương tác trực quan**: HTML5 Native Drag & Drop cho bảng Kanban
+- **HTTP Client**: Axios với Interceptor tự động gắn Bearer JWT và xử lý hết hạn phiên (Auto Logout)
 
-1. Quản lý tài khoản
+### Hạ tầng & DevOps
+- **Containerization**: Docker & Docker Compose (Multi-stage build cho cả Java JRE 21 và Nginx)
+- **Reverse Proxy**: Nginx Alpine (Reverse proxy định tuyến `/api/` về Backend và phục vụ SPA)
 
-* Đăng ký, đăng nhập, đăng xuất.
+---
 
-* Mật khẩu phải được mã hóa an toàn.
+## 3. Bảng đối chiếu tính năng (Feature Matrix)
 
-* Người dùng chỉ được truy cập dữ liệu của mình.
+| Nhóm chức năng | Yêu cầu nghiệp vụ | Trạng thái | Điểm nhấn kỹ thuật |
+|---|---|---|---|
+| **Xác thực & Bảo mật (Auth)** | Đăng ký, Đăng nhập, Đăng xuất, Lấy Profile | ✅ **Hoàn thành** | Stateless JWT; Token Blacklist trên Redis; Rate Limiting chống Brute-force |
+| **Quản lý công việc (Task CRUD)** | Thêm, sửa, xem chi tiết, xóa mềm, đổi trạng thái | ✅ **Hoàn thành** | Chống IDOR (luôn filter theo `userId`), Soft Delete / Status transition |
+| **Tìm kiếm & Phân trang** | Tìm theo tiêu đề, lọc trạng thái/ưu tiên, phân trang | ✅ **Hoàn thành** | Spring Data JPA Specification/Method, phân trang `Pageable`, PageResponse chuẩn |
+| **Bảng Kanban (Bonus)** | Kéo thả trực quan giữa các cột TODO, IN_PROGRESS, DONE | ✅ **Hoàn thành** | HTML5 Drag & Drop mượt mà, cập nhật real-time trạng thái về server |
+| **Đầu việc con (Bonus)** | Checklist Subtasks bên trong Task chi tiết | ✅ **Hoàn thành** | Thêm, tick hoàn thành ngay trong Modal chi tiết; cập nhật tiến độ tức thì |
+| **Nhật ký hoạt động (Bonus)** | Theo dõi lịch sử thay đổi (Audit Trail) | ✅ **Hoàn thành** | Tự động ghi log khi Tạo/Đổi trạng thái/Cập nhật; Drawer trực quan |
+| **Dashboard năng suất (Bonus)**| Thống kê tổng số việc, tỷ lệ hoàn thành, việc quá hạn | ✅ **Hoàn thành** | Tích hợp Redis Cache (`@Cacheable`), tự động hủy cache (`@CacheEvict`) khi có thay đổi |
+| **Xuất báo cáo (Bonus)** | Trích xuất công việc sang file CSV và JSON | ✅ **Hoàn thành** | CSV đính kèm **UTF-8 BOM (`\uFEFF`)** giúp Microsoft Excel hiển thị tiếng Việt hoàn hảo |
+| **Giao diện & UX** | Giao diện Responsive (Mobile/Desktop), Dark Mode | ✅ **Hoàn thành** | Thiết kế Tailwind CSS sạch sẽ, hỗ trợ chuyển đổi Dark/Light mode tức thì |
+| **Tài liệu & Triển khai** | Swagger API Docs, Docker Compose 1 lệnh chạy ngay | ✅ **Hoàn thành** | Nạp sẵn dữ liệu mẫu (`DataSeeder`) phục vụ chấm bài kiểm thử |
 
-2. Quản lý công việc (Task CRUD)
+---
 
-* Tạo, xem, sửa, xóa công việc.
+## 4. Tài khoản kiểm thử có sẵn (Zero-Setup Credentials)
 
-* Mỗi task có tiêu đề, mô tả, trạng thái, mức ưu tiên, hạn hoàn thành.
+Khi hệ thống khởi động lần đầu, `DataSeeder` sẽ tự động tạo sẵn 2 tài khoản và 10 công việc mẫu để người đánh giá có thể đăng nhập trải nghiệm ngay:
 
-* Trạng thái: `TODO`, `IN_PROGRESS`, `DONE`.
+| Vai trò | Email đăng nhập | Mật khẩu | Mục đích kiểm thử |
+|---|---|---|---|
+| **Quản trị viên (Admin)** | `admin@techvanguard.vn` | `Admin@123` | Toàn quyền kiểm tra hệ thống và các công việc mẫu quản trị |
+| **Lập trình viên (User)** | `user@techvanguard.vn` | `User@123` | Trải nghiệm đầy đủ tính năng Kanban, Subtask, Dashboard, Xuất CSV/JSON |
 
-3. Tìm kiếm và lọc
+---
 
-* Tìm kiếm theo tiêu đề.
+## 5. Hướng dẫn cài đặt & Khởi chạy (Getting Started)
 
-* Lọc theo trạng thái và mức ưu tiên.
+### Cách 1: Khởi chạy 1 lệnh duy nhất với Docker Compose (Khuyến nghị)
 
-* Có phân trang nếu dữ liệu lớn.
+Yêu cầu máy đã cài sẵn **Docker** và **Docker Compose**.
 
-4. Dashboard
+```bash
+# 1. Di chuyển vào thư mục dự án
+cd task-management-system
 
-* Tổng số task.
+# 2. Khởi chạy toàn bộ hệ sinh thái (PostgreSQL, Redis, Backend, Frontend)
+docker compose up --build -d
+```
 
-* Số task đã hoàn thành, đang thực hiện và chưa bắt đầu.
+Sau khi các container báo trạng thái `healthy`, truy cập:
+- **Giao diện ứng dụng (Frontend)**: [http://localhost](http://localhost) (Cổng 80)
+- **API Swagger / OpenAPI**: [http://localhost/swagger-ui/index.html](http://localhost/swagger-ui/index.html) hoặc [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
-* Hiển thị danh sách công việc sắp đến hạn.
+Để dừng hệ thống:
+```bash
+docker compose down
+```
 
-### B. Chức năng cộng điểm (không bắt buộc)
+---
 
-* Giao diện Kanban, kéo thả task giữa các trạng thái.
+### Cách 2: Khởi chạy thủ công ở môi trường phát triển (Local Development)
 
-* Docker Compose để khởi chạy ứng dụng.
+#### 1. Khởi chạy Backend (Spring Boot 3)
+Yêu cầu: **JDK 21** và **Maven 3.8+** (hoặc dùng Maven Wrapper).  
+Mặc định profile `dev` sử dụng H2 Database in-memory, không cần cài đặt PostgreSQL hay Redis:
 
-* Unit test hoặc integration test.
+```bash
+cd task-management-system/backend
 
-* Swagger/OpenAPI cho tài liệu API.
+# Chạy kiểm thử tự động
+mvn test
 
-* CI pipeline chạy test khi push code.
+# Khởi động ứng dụng Backend
+mvn spring-boot:run
+```
+Backend sẽ lắng nghe tại cổng `http://localhost:8080`.
 
-* Deploy demo lên server hoặc nền tảng cloud.
+#### 2. Khởi chạy Frontend (React + Vite)
+Yêu cầu: **Node.js 18+** và **npm**:
 
-## 3. Công nghệ đề xuất
+```bash
+cd task-management-system/frontend
 
-- Ứng viên được thỏa sức chọn lựa công nghệ
-- Gợi ý công nghệ có thể dùng ví dụ: nodejs, PHP/Laravel,...
+# Cài đặt thư viện phụ thuộc
+npm install
 
-## 4. Thiết kế database tham khảo
+# Khởi chạy máy chủ phát triển
+npm run dev
+```
+Frontend sẽ hoạt động tại `http://localhost:5173`.
 
-Ứng viên tự thiết kế sao cho đáp ứng nhu cầu đề bài
-Yêu cầu: có migration tạo bảng, khóa ngoại và các ràng buộc dữ liệu phù hợp.
+---
 
-## 5. Sản phẩm ứng viên phải bàn giao
+## 6. Kiểm thử tự động (Automated Testing)
 
-### Checklist bàn giao
+Toàn bộ các luồng nghiệp vụ quan trọng đều được bảo vệ bởi bộ Unit Test chặt chẽ:
+```bash
+cd task-management-system/backend
+mvn test
+```
 
-- Pull Request tạo vào repo gốc
-- README: hướng dẫn cài đặt và chạy dự án
-- File .env.example, không chứa secret thật
-- Database migration và dữ liệu mẫu/seed
-- API documentation hoặc hướng dẫn sử dụng
-- Danh sách chức năng đã hoàn thành và chức năng chưa hoàn thành
-- Video demo 3–5 phút hoặc buổi demo trực tiếp
+Kết quả kiểm thử:
+- `AuthServiceTest`: Kiểm tra luồng Đăng ký tài khoản, Email trùng lặp (`DuplicateResourceException`), Đăng nhập thành công trả về JWT Token, Đăng nhập sai mật khẩu ném lỗi, Đăng xuất và lưu token vào Redis Blacklist.
+- `TaskServiceTest`: Kiểm tra Tạo task, Cập nhật trạng thái Kanban, Kiểm tra quyền sở hữu chống IDOR (`ResourceNotFoundException`), Xóa mềm và Evict Redis Cache.
+- `DashboardServiceTest`: Kiểm tra tính toán số liệu thống kê năng suất, tỷ lệ hoàn thành công việc và hoạt động của bộ đệm Redis.
+
+---
+
+## 7. Cấu trúc thư mục dự án (Project Directory Structure)
+
+```text
+task-management-system/
+├── backend/
+│   ├── src/main/java/com/techvanguard/taskmanager/
+│   │   ├── config/             # Cấu hình Security, WebMvc, OpenAPI, Redis, DataSeeder
+│   │   ├── controller/         # REST Controllers (Auth, Task, Subtask, ActivityLog, Dashboard, Export)
+│   │   ├── dto/                # Request & Response Data Transfer Objects
+│   │   ├── entity/             # JPA Entities (User, Task, Subtask, TaskActivityLog, BaseEntity)
+│   │   ├── enums/              # Enums (TaskStatus, TaskPriority, UserRole)
+│   │   ├── exception/          # GlobalExceptionHandler & Custom Business Exceptions
+│   │   ├── mapper/             # Component Mappers (Entity <-> DTO)
+│   │   ├── repository/         # Spring Data JPA Repositories
+│   │   ├── security/           # CustomUserDetailsService, UserPrincipal, JwtTokenProvider, Filter
+│   │   └── service/            # Interfaces và Thư mục implement/ chứa Business Logic
+│   ├── src/main/resources/     # application.yml, application-dev.yml, application-prod.yml
+│   ├── src/test/java/          # Unit Tests (AuthServiceTest, TaskServiceTest, DashboardServiceTest)
+│   ├── Dockerfile              # Multi-stage build Eclipse Temurin 21 JRE
+│   └── pom.xml                 # Maven dependencies
+├── frontend/
+│   ├── src/
+│   │   ├── components/         # Shared UI (Button, Input, Badge, Modal, Layout) và Task UI (Kanban, List, Modals)
+│   │   ├── context/            # AuthContext (quản lý trạng thái đăng nhập toàn cục)
+│   │   ├── pages/              # Các trang chính: LoginPage, RegisterPage, KanbanPage, TasksPage, DashboardPage, ExportPage
+│   │   ├── services/api/       # Axios client và các API Service modules
+│   │   ├── types/              # TypeScript Interfaces & Types
+│   │   ├── App.tsx             # Định tuyến React Router & Route Protection
+│   │   └── main.tsx            # Entrypoint
+│   ├── Dockerfile              # Multi-stage build Node 20 & Nginx Alpine
+│   ├── nginx.conf              # Cấu hình Nginx reverse proxy
+│   ├── package.json
+│   └── vite.config.ts
+├── docker-compose.yml          # Điều phối 4 dịch vụ: postgres, redis, backend, frontend
+├── .env.example                # Biến môi trường mẫu
+└── README.md                   # Tài liệu hướng dẫn bàn giao hệ thống
+```
