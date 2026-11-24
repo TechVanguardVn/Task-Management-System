@@ -1,0 +1,381 @@
+@font-face {
+  font-family: 'TaskFlow Workspace';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../../assets/fonts/InterVariable.woff2') format('woff2');
+}
+.workspace-shell,
+.session-gate {
+  font-family: 'TaskFlow Workspace', 'Segoe UI', sans-serif;
+  color: #131b2e;
+  background: #faf8ff;
+  min-height: 100dvh;
+}
+.workspace-shell {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+}
+.workspace-shell a:focus-visible,
+.workspace-shell button:focus-visible,
+.session-gate button:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 3px;
+}
+.workspace-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  border-right: 1px solid #f0edf8;
+  background: white;
+}
+.workspace-sidebar-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 28px 16px 20px;
+}
+.workspace-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.workspace-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.4px;
+}
+.workspace-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #6366f1;
+  color: white;
+}
+.workspace-brand-mark svg {
+  width: 19px;
+  height: 19px;
+}
+.workspace-brand-caption {
+  display: block;
+  margin-top: 2px;
+  color: #79758a;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.workspace-nav-label {
+  margin: 42px 12px 12px;
+  color: #8a869a;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.workspace-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 44px;
+  margin: 4px 0;
+  padding: 10px 12px;
+  border-radius: 9px;
+  color: #575366;
+  font-size: 13px;
+  font-weight: 450;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.workspace-nav-link:hover {
+  color: #4f46e5;
+  background: #f2f1ff;
+}
+.workspace-nav-link.is-active {
+  background: #6366f1;
+  color: white;
+  box-shadow: 0 2px 4px #6366f115;
+}
+.workspace-nav-link svg {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+}
+.workspace-sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 32px 12px 0;
+  color: #a09bac;
+  font-size: 11px;
+}
+.workspace-footer-mark {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d4d0ed;
+}
+.workspace-body {
+  min-width: 0;
+}
+.workspace-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  min-height: 76px;
+  padding: 12px 32px;
+  border-bottom: 1px solid #f0edf8;
+  background: #fff;
+}
+.workspace-header-context {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: #625d73;
+  font-size: 13px;
+  font-weight: 500;
+}
+.workspace-main {
+  padding: 36px 32px;
+  outline: none;
+}
+.shell-icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  color: #625d73;
+  cursor: pointer;
+}
+.shell-icon-button:hover {
+  color: #4f46e5;
+  background: #f3f1ff;
+}
+.mobile-nav-toggle {
+  display: none;
+}
+.user-avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #e8e5ff;
+  color: #4940be;
+  font-size: 13px;
+  font-weight: 650;
+}
+.user-menu {
+  position: relative;
+  min-width: 0;
+}
+.user-menu-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  min-height: 44px;
+  max-width: 320px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.user-menu-trigger > svg {
+  color: #8b859e;
+}
+.header-user-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+}
+.header-user-name > span {
+  display: block;
+  margin-top: 2px;
+  color: #817b91;
+  font-size: 11px;
+  font-weight: 400;
+}
+.user-menu-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: min(300px, calc(100vw - 32px));
+  padding: 8px;
+  border: 1px solid #ece9f5;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 12px 32px #21144812;
+}
+.user-menu-details {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px 14px;
+  border-bottom: 1px solid #f2f0f8;
+  overflow-wrap: anywhere;
+}
+.user-menu-details strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.user-menu-details span {
+  color: #80798e;
+  font-size: 12px;
+}
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  width: 100%;
+  margin-top: 4px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #b13c54;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+.logout-button:hover {
+  background: #fff2f4;
+}
+.logout-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+.logout-error {
+  margin: 8px;
+  color: #b13c54;
+  font-size: 12px;
+}
+.workspace-skip {
+  position: fixed;
+  z-index: 100;
+  top: -100px;
+  left: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: white;
+}
+.workspace-skip:focus {
+  top: 12px;
+}
+.mobile-navigation {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(290px, calc(100vw - 48px));
+  height: 100dvh;
+  max-height: 100dvh;
+  max-width: none;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-right: 1px solid #f0edf8;
+  background: white;
+  color: #131b2e;
+  font-family: 'TaskFlow Workspace', 'Segoe UI', sans-serif;
+}
+.mobile-navigation::backdrop {
+  background: #18132966;
+  backdrop-filter: blur(2px);
+}
+body:has(.mobile-navigation[open]) {
+  overflow: hidden;
+}
+.session-gate {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+}
+.session-gate h1 {
+  font-size: 24px;
+  font-weight: 600;
+}
+.session-gate p {
+  color: #777084;
+}
+.session-gate button {
+  margin: 4px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  color: white;
+  background: #6366f1;
+  cursor: pointer;
+}
+.session-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #dcd8ff;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: session-spin 0.8s linear infinite;
+}
+@keyframes session-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 1023px) {
+  .workspace-shell {
+    display: block;
+  }
+  .workspace-sidebar {
+    display: none;
+  }
+  .mobile-nav-toggle {
+    display: inline-grid;
+  }
+  .workspace-header {
+    padding: 12px 24px;
+  }
+  .workspace-main {
+    padding: 28px 24px;
+  }
+}
+@media (max-width: 639px) {
+  .workspace-header {
+    min-height: 68px;
+    padding: 10px 16px;
+    gap: 12px;
+  }
+  .workspace-main {
+    padding: 24px 16px;
+  }
+  .header-user-name {
+    display: none;
+  }
+  .user-menu-trigger {
+    gap: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-shell *,
+  .mobile-navigation *,
+  .session-spinner {
+    transition: none !important;
+    animation: none !important;
+  }
+}

@@ -1,0 +1,15 @@
+# Allow only the files used by the Maven build stage.
+**
+!Dockerfile
+!pom.xml
+!src/
+!src/main/
+!src/main/**
+
+# Keep secrets excluded even if accidentally placed below src/main.
+**/.env
+**/.env.*
+**/*.key
+**/*.pem
+**/*.p12
+**/*.pfx

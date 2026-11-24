@@ -1,0 +1,43 @@
+.taskflow-toast-host {
+  position: fixed;
+  z-index: 10000;
+  pointer-events: none;
+}
+.taskflow-toast-host [data-sonner-toaster] {
+  font-family: 'TaskFlow Workspace', 'Inter', 'Segoe UI', sans-serif;
+  pointer-events: none;
+}
+.taskflow-toast-host [data-sonner-toast].taskflow-toast {
+  pointer-events: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px #2520471a;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.taskflow-toast-host [data-sonner-toast] [data-description] {
+  font-size: 12px;
+  line-height: 1.6;
+}
+.taskflow-toast-host [data-sonner-toast] [data-close-button] {
+  width: 28px;
+  height: 28px;
+}
+.taskflow-toast-host [data-sonner-toast] [data-close-button]:focus-visible {
+  outline: 3px solid #6366f1;
+  outline-offset: 3px;
+}
+.taskflow-toast-host [data-sonner-toaster] {
+  --normal-bg: #fff;
+  --normal-border: #e9e7f4;
+  --normal-text: #27243c;
+  --info-bg: #f2f1ff;
+  --info-border: #d8d5ff;
+  --info-text: #4844b4;
+}
+@media (prefers-reduced-motion: reduce) {
+  .taskflow-toast-host [data-sonner-toast] {
+    transition: none !important;
+    animation: none !important;
+  }
+}
