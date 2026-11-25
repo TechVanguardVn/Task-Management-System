@@ -29,7 +29,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("SELECT t FROM Task t WHERE t.user.id = :userId " +
            "AND (:status IS NULL OR t.status = :status) " +
            "AND (:priority IS NULL OR t.priority = :priority) " +
-           "AND (:keyword = '' OR LOWER(t.title) LIKE :keyword)")
+           "AND (:keyword = '' OR LOWER(t.title) LIKE :keyword OR LOWER(COALESCE(t.description, '')) LIKE :keyword)")
     Page<Task> findByFilters(@Param("userId") Long userId,
                              @Param("status") TaskStatus status,
                              @Param("priority") TaskPriority priority,
