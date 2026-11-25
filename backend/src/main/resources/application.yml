@@ -1,0 +1,35 @@
+# Cấu hình môi trường mặc định (Spring Profiles)
+spring:
+  application:
+    name: task-management-backend
+  profiles:
+    active: dev # Mặc định kích hoạt profile dev (H2 in-memory) khi chạy local
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+# Cấu hình tài liệu OpenAPI / Swagger UI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
+
+# Thiết lập cổng Server mặc định
+server:
+  port: 8080
+  error:
+    # SECURITY: Tuyệt đối không để lộ stack trace ra ngoài response trên môi trường production
+    include-stacktrace: never
+    include-message: always
+
+# Cấu hình JWT Token (Bảo mật)
+jwt:
+  # Secret key tối thiểu 256-bit chuẩn HMAC-SHA256
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  # Thời hạn hiệu lực của Access Token (24 giờ = 86400000 ms)
+  expiration-ms: 86400000
