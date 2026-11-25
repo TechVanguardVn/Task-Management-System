@@ -29,7 +29,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("SELECT t FROM Task t WHERE t.user.id = :userId " +
            "AND (:status IS NULL OR t.status = :status) " +
            "AND (:priority IS NULL OR t.priority = :priority) " +
-           "AND (:keyword IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+           "AND (:keyword = '' OR LOWER(t.title) LIKE :keyword)")
     Page<Task> findByFilters(@Param("userId") Long userId,
                              @Param("status") TaskStatus status,
                              @Param("priority") TaskPriority priority,
@@ -76,11 +76,12 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
      * Lấy danh sách tối đa 5 công việc sắp đến hạn trong khoảng thời gian xác định (phục vụ widget Dashboard).
      */
     @Query("SELECT t FROM Task t WHERE t.user.id = :userId " +
-           "AND t.status != 'DONE' " +
+           "AND t.status != :doneStatus " +
            "AND t.dueDate IS NOT NULL " +
            "AND t.dueDate >= :startDateTime AND t.dueDate <= :endDateTime " +
            "ORDER BY t.dueDate ASC")
     List<Task> findUpcomingTasks(@Param("userId") Long userId,
+                                 @Param("doneStatus") TaskStatus doneStatus,
                                  @Param("startDateTime") LocalDateTime startDateTime,
                                  @Param("endDateTime") LocalDateTime endDateTime,
                                  Pageable pageable);

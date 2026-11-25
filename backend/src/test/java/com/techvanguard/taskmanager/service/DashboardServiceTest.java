@@ -53,7 +53,7 @@ class DashboardServiceTest {
         when(taskRepository.countByUserIdAndStatus(userId, TaskStatus.TODO)).thenReturn(4L);
         when(taskRepository.countByUserIdAndStatus(userId, TaskStatus.IN_PROGRESS)).thenReturn(2L);
         when(taskRepository.countByUserIdAndStatus(userId, TaskStatus.DONE)).thenReturn(4L);
-        when(taskRepository.findUpcomingTasks(eq(userId), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
+        when(taskRepository.findUpcomingTasks(eq(userId), eq(TaskStatus.DONE), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(List.of(upcomingTask));
 
         DashboardMetricsResponse metrics = dashboardService.getMetrics(userId);
@@ -77,7 +77,7 @@ class DashboardServiceTest {
         when(taskRepository.countByUserIdAndStatus(userId, TaskStatus.TODO)).thenReturn(0L);
         when(taskRepository.countByUserIdAndStatus(userId, TaskStatus.IN_PROGRESS)).thenReturn(0L);
         when(taskRepository.countByUserIdAndStatus(userId, TaskStatus.DONE)).thenReturn(0L);
-        when(taskRepository.findUpcomingTasks(eq(userId), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
+        when(taskRepository.findUpcomingTasks(eq(userId), eq(TaskStatus.DONE), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(Collections.emptyList());
 
         DashboardMetricsResponse metrics = dashboardService.getMetrics(userId);

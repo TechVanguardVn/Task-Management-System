@@ -66,7 +66,7 @@ public class TaskServiceImpl implements TaskService {
         Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by(direction, validSortBy));
 
         // Bước 2: Thực hiện truy vấn danh sách có phân trang và lọc theo user hiện tại (chống IDOR)
-        String keyword = (search != null && !search.isBlank()) ? search.trim() : null;
+        String keyword = (search != null && !search.isBlank()) ? "%" + search.trim().toLowerCase() + "%" : "";
         Page<Task> taskPage = taskRepository.findByFilters(userId, status, priority, keyword, pageable);
 
         // Bước 3: Chuyển đổi Entity sang DTO và bọc vào PageResponse chuẩn
@@ -77,7 +77,9 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(readOnly = true)
     public List<TaskResponse> getKanbanTasks(Long userId, TaskStatus status) {
-        List<Task> tasks = taskRepository.findByUserIdAndStatusOrderByUpdatedAtDesc(userId, status);
+        List<Task> tasks = (status != null)
+                ? taskRepository.findByUserIdAndStatusOrderByUpdatedAtDesc(userId, status)
+                : taskRepository.findByUserIdOrderByCreatedAtDesc(userId);
         return taskMapper.toResponseList(tasks);
     }
 

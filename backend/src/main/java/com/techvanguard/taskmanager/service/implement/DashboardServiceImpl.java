@@ -51,7 +51,7 @@ public class DashboardServiceImpl implements DashboardService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime next7Days = now.plusDays(7);
         List<Task> rawUpcoming = taskRepository.findUpcomingTasks(
-                userId, now.minusDays(30), next7Days, PageRequest.of(0, 5)
+                userId, TaskStatus.DONE, now.minusDays(30), next7Days, PageRequest.of(0, 5)
         );
 
         long overdueCount = 0;
