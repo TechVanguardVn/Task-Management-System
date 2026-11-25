@@ -4,6 +4,10 @@ spring:
     name: task-management-backend
   profiles:
     active: dev # Mặc định kích hoạt profile dev (H2 in-memory) khi chạy local
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
 
 # Cấu hình tài liệu OpenAPI / Swagger UI
 springdoc:

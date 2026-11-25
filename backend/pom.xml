@@ -67,6 +67,16 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Flyway Migration: Quản lý phiên bản và cấu trúc schema cơ sở dữ liệu -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+
         <!-- H2 Database In-Memory: Phục vụ chạy kiểm thử và khởi động phát triển nhanh tại local -->
         <dependency>
             <groupId>com.h2database</groupId>
