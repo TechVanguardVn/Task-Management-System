@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { MainLayout } from './components/layout/MainLayout';
@@ -32,30 +32,8 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 };
 
 const AppContent: React.FC = () => {
-  const { isAuthenticated } = useAuth();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isActivityDrawerOpen, setIsActivityDrawerOpen] = useState(false);
-
-  // Phím tắt nhanh trên bàn phím:
-  // - Nhấn 'c' hoặc 'C' để mở nhanh modal tạo công việc
-  // - Nhấn '/' để focus ô tìm kiếm
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Chỉ kích hoạt khi người dùng không đang gõ văn bản trong input/textarea
-      const target = e.target as HTMLElement;
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) {
-        return;
-      }
-
-      if ((e.key === 'c' || e.key === 'C') && isAuthenticated) {
-        e.preventDefault();
-        setIsTaskModalOpen(true);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isAuthenticated]);
 
   const handleCreateTask = async (data: CreateTaskRequest) => {
     await taskService.createTask(data);
