@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CreateTaskRequest, TaskFilterParams, TaskPriority, TaskResponse, TaskStatus, UpdateTaskRequest } from '../../../types/task.types';
 import { taskService } from '../../../services/api/taskService';
@@ -28,14 +28,18 @@ export const TasksPage: React.FC = () => {
   const [editingTask, setEditingTask] = useState<TaskResponse | null>(null);
   const [selectedDetailTaskId, setSelectedDetailTaskId] = useState<number | null>(null);
 
-  const updateParam = (key: string, value?: string) => {
-    const newParams = new URLSearchParams(searchParams);
-    if (value) {
-      newParams.set(key, value);
-    } else {
-      newParams.delete(key);
-    }
-    setSearchParams(newParams);
+  const updateParams = (updates: Record<string, string | undefined>) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+          next.set(key, value);
+        } else {
+          next.delete(key);
+        }
+      });
+      return next;
+    });
   };
 
   const fetchTasks = useCallback(async () => {
@@ -69,6 +73,21 @@ export const TasksPage: React.FC = () => {
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);
+
+  // Lọc tác vụ trên giao diện Kanban theo từ khóa và bộ lọc trạng thái / ưu tiên
+  const displayedKanbanTasks = useMemo(() => {
+    if (viewMode !== 'kanban') return tasks;
+    return tasks.filter((t) => {
+      const s = search.trim().toLowerCase();
+      const matchesSearch =
+        !s ||
+        t.title.toLowerCase().includes(s) ||
+        (t.description && t.description.toLowerCase().includes(s));
+      const matchesStatus = !status || t.status === status;
+      const matchesPriority = !priority || t.priority === priority;
+      return matchesSearch && matchesStatus && matchesPriority;
+    });
+  }, [tasks, viewMode, search, status, priority]);
 
   // Kéo thả Kanban với Optimistic UI Update (Phản hồi tức thì)
   const handleStatusChange = async (taskId: number, newStatus: TaskStatus) => {
@@ -122,28 +141,19 @@ export const TasksPage: React.FC = () => {
       {/* Thanh bộ lọc và công cụ tìm kiếm */}
       <TaskFilterBar
         search={search}
-        onSearchChange={(val) => {
-          updateParam('search', val);
-          updateParam('page', '0');
-        }}
+        onSearchChange={(val) => updateParams({ search: val, page: '0' })}
         status={status}
-        onStatusChange={(val) => {
-          updateParam('status', val);
-          updateParam('page', '0');
-        }}
+        onStatusChange={(val) => updateParams({ status: val, page: '0' })}
         priority={priority}
-        onPriorityChange={(val) => {
-          updateParam('priority', val);
-          updateParam('page', '0');
-        }}
+        onPriorityChange={(val) => updateParams({ priority: val, page: '0' })}
         viewMode={viewMode}
-        onViewModeChange={(mode) => updateParam('view', mode)}
+        onViewModeChange={(mode) => updateParams({ view: mode })}
       />
 
       {/* Vùng nội dung theo chế độ xem */}
       {viewMode === 'kanban' ? (
         <KanbanBoard
-          tasks={tasks}
+          tasks={displayedKanbanTasks}
           onStatusChange={handleStatusChange}
           onEditTask={(t) => {
             setEditingTask(t);
@@ -163,7 +173,7 @@ export const TasksPage: React.FC = () => {
           totalPages={totalPages}
           currentPage={page}
           pageSize={9}
-          onPageChange={(p) => updateParam('page', p.toString())}
+          onPageChange={(p) => updateParams({ page: p.toString() })}
           onEditTask={(t) => {
             setEditingTask(t);
             setIsTaskModalOpen(true);
