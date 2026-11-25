@@ -1,0 +1,76 @@
+server:
+  # PORT: do nền tảng cloud cấp (vd Render). Không có thì dùng SERVER_PORT, mặc định 8080
+  port: ${PORT:${SERVER_PORT:8080}}
+  # Đọc header X-Forwarded-Proto/Host khi chạy sau proxy HTTPS (Render, Nginx...) để link tạo ra
+  # (vd địa chỉ server trong Swagger) là https:// thay vì http://
+  request:
+    header:
+      forwarded:
+        strategy: framework
+
+spring:
+  application:
+    name: task-management
+
+  # Đọc biến môi trường từ file .env (nếu có) ở thư mục chạy app. Xem .env.example
+  # Biến môi trường của hệ điều hành / Docker có độ ưu tiên cao hơn giá trị trong .env
+  config:
+    import: optional:file:.env[.properties]
+
+  # Database: mặc định H2 in-memory, chế độ tương thích MySQL (khi tắt app sẽ mất data).
+  # Chạy bằng Docker Compose thì dùng MySQL thật (DB_URL được set trong docker-compose.yml).
+  # Driver và dialect được Spring/Hibernate tự nhận diện từ DB_URL nên đổi DB chỉ cần đổi biến môi trường.
+  datasource:
+    url: ${DB_URL:jdbc:h2:mem:taskdb;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+
+  # Giao diện web của H2 để xem database trực quan (chỉ dùng khi chạy local với H2; Docker tắt đi)
+  h2:
+    console:
+      enabled: ${H2_CONSOLE_ENABLED:true}
+      path: /h2-console
+      settings:
+        web-allow-others: true
+
+  # Phân trang: giới hạn size tối đa để client không lấy quá nhiều bản ghi 1 lần
+  data:
+    web:
+      pageable:
+        max-page-size: 100
+
+  jpa:
+    # Tắt Open Session In View: chỉ truy vấn DB trong tầng service (đã chuyển sang DTO trước khi trả về)
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# Swagger UI: http://localhost:8080/swagger-ui.html
+springdoc:
+  swagger-ui:
+    persist-authorization: true   # giữ token đã nhập ở nút Authorize khi reload trang
+    operations-sorter: method
+    tags-sorter: alpha
+  default-produces-media-type: application/json
+
+# Tính năng AI (Google Gemini). Không có AI_API_KEY → tắt AI, các chức năng khác vẫn chạy bình thường.
+# Lấy key miễn phí tại https://aistudio.google.com (Get API key)
+ai:
+  api-key: ${AI_API_KEY:}
+  base-url: ${AI_BASE_URL:https://generativelanguage.googleapis.com}
+  model: ${AI_MODEL:gemini-3.5-flash-lite}
+  api-revision: ${AI_API_REVISION:2026-05-20}
+  timeout: ${AI_TIMEOUT:20s}
+  max-requests-per-hour: ${AI_MAX_REQUESTS_PER_HOUR:20}
+  # Tổng số lần gọi AI của cả app trong 24 giờ (0 = không giới hạn). Quan trọng khi deploy công khai
+  max-requests-per-day: ${AI_MAX_REQUESTS_PER_DAY:200}
+
+# Cấu hình JWT
+jwt:
+  # BẮT BUỘC, không có giá trị mặc định: thiếu JWT_SECRET thì app dừng ngay khi khởi động
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}

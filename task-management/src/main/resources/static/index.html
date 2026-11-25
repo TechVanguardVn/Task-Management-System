@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Task Manager</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/app.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+
+  <!-- ===================== Đăng nhập / Đăng ký ===================== -->
+  <section id="auth-view" class="auth" hidden>
+    <div class="auth-card">
+      <div class="brand">
+        <img src="favicon.svg" alt="" class="brand-logo">
+        <span>Task Manager</span>
+      </div>
+      <p class="muted">Quản lý công việc cá nhân, theo dõi tiến độ mỗi ngày.</p>
+
+      <div class="segmented" role="tablist">
+        <button type="button" class="segment active" role="tab" data-auth-tab="login">Đăng nhập</button>
+        <button type="button" class="segment" role="tab" data-auth-tab="register">Đăng ký</button>
+      </div>
+
+      <form id="login-form" class="form" novalidate>
+        <label class="field">
+          <span>Email</span>
+          <input name="email" type="email" required autocomplete="username" placeholder="ban@example.com">
+        </label>
+        <label class="field">
+          <span>Mật khẩu</span>
+          <input name="password" type="password" required autocomplete="current-password">
+        </label>
+        <p class="form-error" hidden></p>
+        <button class="btn primary block" type="submit">Đăng nhập</button>
+      </form>
+
+      <form id="register-form" class="form" novalidate hidden>
+        <label class="field">
+          <span>Họ tên</span>
+          <input name="fullName" required autocomplete="name" placeholder="Nguyễn Văn A">
+          <small class="field-error" data-error-for="fullName"></small>
+        </label>
+        <label class="field">
+          <span>Email</span>
+          <input name="email" type="email" required autocomplete="username" placeholder="ban@example.com">
+          <small class="field-error" data-error-for="email"></small>
+        </label>
+        <label class="field">
+          <span>Mật khẩu (tối thiểu 6 ký tự)</span>
+          <input name="password" type="password" required minlength="6" autocomplete="new-password">
+          <small class="field-error" data-error-for="password"></small>
+        </label>
+        <p class="form-error" hidden></p>
+        <button class="btn primary block" type="submit">Tạo tài khoản</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===================== Ứng dụng chính ===================== -->
+  <div id="app-view" class="layout" hidden>
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="favicon.svg" alt="" class="brand-logo">
+        <span>Task Manager</span>
+      </div>
+
+      <nav class="nav">
+        <p class="nav-label">Tổng quan</p>
+        <a href="#/dashboard" class="nav-item" data-nav="dashboard">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>
+          Dashboard
+        </a>
+        <a href="#/tasks" class="nav-item" data-nav="tasks">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>
+          Công việc
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user">
+          <span class="avatar" id="user-avatar" aria-hidden="true"></span>
+          <span class="user-email" id="user-email"></span>
+        </div>
+        <button type="button" class="btn ghost small" id="logout-btn">Đăng xuất</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <!-- ----- Dashboard ----- -->
+      <section id="dashboard-view" class="page" hidden>
+        <header class="page-header">
+          <div>
+            <h1>Dashboard</h1>
+            <p class="muted" id="dashboard-greeting">Tổng quan công việc của bạn</p>
+          </div>
+          <button type="button" class="btn primary" data-action="new-task">+ Thêm task</button>
+        </header>
+
+        <div class="stats" id="stats"></div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Sắp đến hạn</h2>
+            <select id="upcoming-days" aria-label="Khoảng thời gian">
+              <option value="7">7 ngày tới</option>
+              <option value="14">14 ngày tới</option>
+              <option value="30">30 ngày tới</option>
+            </select>
+          </div>
+          <ul class="upcoming" id="upcoming-list"></ul>
+        </div>
+      </section>
+
+      <!-- ----- Công việc: Board / List ----- -->
+      <section id="tasks-view" class="page" hidden>
+        <header class="page-header">
+          <div>
+            <h1>Công việc</h1>
+            <p class="muted">Kéo thả thẻ giữa các cột để đổi trạng thái</p>
+          </div>
+          <button type="button" class="btn primary" data-action="new-task">+ Thêm task</button>
+        </header>
+
+        <div class="view-tabs" role="tablist">
+          <button type="button" class="view-tab active" role="tab" data-view="board">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v16H4zM10 4h4v10h-4zM16 4h4v13h-4z"/></svg>
+            Board
+          </button>
+          <button type="button" class="view-tab" role="tab" data-view="list">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            List
+          </button>
+        </div>
+
+        <div class="toolbar">
+          <input type="search" id="filter-search" placeholder="Tìm theo tiêu đề..." aria-label="Tìm theo tiêu đề">
+          <select id="filter-status" class="list-only" aria-label="Lọc theo trạng thái" hidden>
+            <option value="">Tất cả trạng thái</option>
+            <option value="TODO">Cần làm</option>
+            <option value="IN_PROGRESS">Đang làm</option>
+            <option value="DONE">Hoàn thành</option>
+          </select>
+          <select id="filter-priority" aria-label="Lọc theo mức ưu tiên">
+            <option value="">Mọi mức ưu tiên</option>
+            <option value="HIGH">Ưu tiên cao</option>
+            <option value="MEDIUM">Ưu tiên trung bình</option>
+            <option value="LOW">Ưu tiên thấp</option>
+          </select>
+          <select id="list-sort" class="list-only" aria-label="Sắp xếp" hidden>
+            <option value="createdAt,desc">Mới tạo trước</option>
+            <option value="dueDate,asc">Hạn sớm nhất</option>
+            <option value="dueDate,desc">Hạn muộn nhất</option>
+            <option value="title,asc">Tiêu đề A → Z</option>
+          </select>
+        </div>
+
+        <div id="board" class="board"></div>
+
+        <div id="list" class="panel" hidden>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Tiêu đề</th>
+                  <th>Trạng thái</th>
+                  <th>Ưu tiên</th>
+                  <th>Hạn hoàn thành</th>
+                </tr>
+              </thead>
+              <tbody id="list-body"></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ===================== Hộp thoại tạo / sửa task ===================== -->
+  <dialog id="task-dialog" aria-labelledby="task-dialog-title">
+    <form id="task-form" class="form" novalidate>
+      <h2 id="task-dialog-title">Thêm task</h2>
+
+      <!-- Thêm nhanh bằng AI: chỉ hiện khi tạo task mới và server đã bật AI -->
+      <div class="ai-box" id="ai-box" hidden>
+        <label class="field" for="ai-input">
+          <span class="ai-label">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8zM19 15l.9 2.1 2.1.9-2.1.9L19 21l-.9-2.1-2.1-.9 2.1-.9z"/></svg>
+            Mô tả nhanh bằng một câu
+          </span>
+        </label>
+        <div class="ai-row">
+          <input id="ai-input" maxlength="500" autocomplete="off"
+                 placeholder="Ví dụ: Nộp báo cáo quý cho sếp trước 5h chiều thứ 6, gấp">
+          <button type="button" class="btn ai-btn" id="ai-fill">Điền tự động</button>
+        </div>
+        <small class="ai-hint">AI điền sẵn các ô bên dưới để bạn kiểm tra trước khi lưu.
+          Nội dung được gửi tới Google Gemini, không nhập thông tin nhạy cảm.</small>
+        <p class="ai-error" id="ai-error" role="alert" hidden></p>
+      </div>
+
+      <label class="field">
+        <span>Tiêu đề *</span>
+        <input name="title" required maxlength="255" placeholder="Ví dụ: Viết báo cáo tuần">
+        <small class="field-error" data-error-for="title"></small>
+      </label>
+
+      <label class="field">
+        <span>Mô tả</span>
+        <textarea name="description" rows="4" maxlength="5000" placeholder="Chi tiết công việc (không bắt buộc)"></textarea>
+        <small class="field-error" data-error-for="description"></small>
+      </label>
+
+      <div class="field-row">
+        <label class="field">
+          <span>Trạng thái</span>
+          <select name="status">
+            <option value="TODO">Cần làm</option>
+            <option value="IN_PROGRESS">Đang làm</option>
+            <option value="DONE">Hoàn thành</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Ưu tiên</span>
+          <select name="priority">
+            <option value="HIGH">Cao</option>
+            <option value="MEDIUM">Trung bình</option>
+            <option value="LOW">Thấp</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Hạn hoàn thành</span>
+          <!-- Ô ngày tự làm để luôn hiện dd/mm/yyyy (ô type="date" hiện theo ngôn ngữ trình duyệt, máy tiếng Anh sẽ ra mm/dd/yyyy).
+               Ô date gốc chỉ dùng để bật lịch chọn ngày. -->
+          <span class="date-input">
+            <input name="dueDate" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="dd/mm/yyyy">
+            <button type="button" class="date-btn" id="due-picker-btn" aria-label="Chọn ngày trên lịch" title="Chọn ngày trên lịch">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/></svg>
+            </button>
+            <input type="date" id="due-picker" class="date-native" tabindex="-1" aria-hidden="true">
+          </span>
+          <small class="field-error" data-error-for="dueDate"></small>
+        </label>
+      </div>
+
+      <p class="form-error" hidden></p>
+
+      <div class="dialog-actions">
+        <button type="button" class="btn danger" id="task-delete" hidden>Xóa</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn" id="task-cancel">Hủy</button>
+        <button type="submit" class="btn primary">Lưu</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

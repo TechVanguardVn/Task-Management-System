@@ -1,0 +1,112 @@
+# =============================================================================
+# CI: tự chạy mỗi khi push code hoặc tạo Pull Request
+#   1. Build & Test     : chạy toàn bộ unit test + integration test (H2), build file .jar
+#   2. Docker smoke test: dựng MySQL + app bằng Docker Compose, gọi thử API thật
+# Xem kết quả ở tab "Actions" trên GitHub.
+# =============================================================================
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch: # cho phép bấm chạy tay trên tab Actions
+
+# Push liên tục trên cùng 1 nhánh thì hủy lần chạy cũ, chỉ giữ lần mới nhất
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: task-management
+
+jobs:
+  test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: task-management/pom.xml
+
+      # File commit từ Windows thường mất quyền thực thi trên Linux
+      - name: Make Maven Wrapper executable
+        run: chmod +x mvnw
+
+      # verify = compile + chạy test + đóng gói .jar. Test dùng profile "test" (H2) nên không cần .env
+      - name: Build and run tests
+        run: ./mvnw -B verify
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports
+          path: task-management/target/surefire-reports/
+          retention-days: 7
+
+  docker:
+    name: Docker Compose smoke test
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      # Tạo .env từ .env.example với secret sinh ngẫu nhiên (chỉ dùng trong lần chạy CI này)
+      - name: Create .env for CI
+        run: |
+          cp .env.example .env
+          sed -i "s|^JWT_SECRET=.*|JWT_SECRET=$(openssl rand -base64 64 | tr -d '\r\n')|" .env
+          sed -i "s|^MYSQL_PASSWORD=.*|MYSQL_PASSWORD=$(openssl rand -hex 16)|" .env
+          sed -i "s|^MYSQL_ROOT_PASSWORD=.*|MYSQL_ROOT_PASSWORD=$(openssl rand -hex 16)|" .env
+
+      - name: Start MySQL + app
+        run: docker compose up -d --build --wait --wait-timeout 300
+
+      - name: Smoke test API
+        run: |
+          echo "Đợi app khởi động..."
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:8080/v3/api-docs > /dev/null && break
+            sleep 2
+          done
+
+          echo "Đăng nhập bằng tài khoản seed"
+          LOGIN=$(curl -sf -X POST http://localhost:8080/api/auth/login \
+            -H "Content-Type: application/json" \
+            -d '{"email":"alice@example.com","password":"Password@123"}')
+          TOKEN=$(echo "$LOGIN" | sed -E 's/.*"accessToken":"([^"]+)".*/\1/')
+          test -n "$TOKEN" && test "$TOKEN" != "$LOGIN"
+
+          echo "Kiểm tra danh sách task và dashboard"
+          curl -sf -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/tasks | grep -q '"totalElements":10'
+          curl -sf -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/dashboard | grep -q '"totalTasks":10'
+
+          echo "Kiểm tra API bảo vệ trả 401 khi không có token"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/tasks)" = "401"
+
+          echo "Smoke test OK"
+
+      - name: Show container logs
+        if: failure()
+        run: docker compose logs
+
+      - name: Stop and clean up
+        if: always()
+        run: docker compose down -v

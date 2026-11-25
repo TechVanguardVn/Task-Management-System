@@ -1,0 +1,65 @@
+# =============================================================================
+# Chạy toàn bộ hệ thống (MySQL + Spring Boot app) bằng 1 lệnh:
+#
+#   cp .env.example .env      # lần đầu: tạo file .env rồi điền JWT_SECRET, mật khẩu MySQL
+#   docker compose up -d --build
+#
+# Sau khi chạy:
+#   - Swagger UI:  http://localhost:8080/swagger-ui.html
+#   - MySQL:       localhost:3306 (kết nối bằng MySQL Workbench, user/password lấy trong .env)
+#
+# Dừng:                    docker compose down
+# Dừng và XÓA dữ liệu DB:  docker compose down -v
+#
+# Docker Compose tự đọc biến trong file .env (cùng thư mục) để điền vào ${...} bên dưới.
+# =============================================================================
+name: task-management
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-taskdb}
+      MYSQL_USER: ${MYSQL_USER:-taskuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Thiếu MYSQL_PASSWORD trong file .env (xem .env.example)}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Thiếu MYSQL_ROOT_PASSWORD trong file .env (xem .env.example)}
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"   # mở ra ngoài để kết nối bằng MySQL Workbench
+    volumes:
+      - mysql-data:/var/lib/mysql      # dữ liệu được giữ lại khi tắt / khởi động lại container
+    healthcheck:
+      # Dùng TCP (127.0.0.1) để không "báo khỏe" nhầm lúc MySQL đang khởi tạo lần đầu
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  app:
+    build: .
+    image: task-management-app:latest
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy     # đợi MySQL sẵn sàng rồi mới chạy app (Flyway cần DB)
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    environment:
+      SERVER_PORT: 8080
+      DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-taskdb}?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
+      DB_USERNAME: ${MYSQL_USER:-taskuser}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Thiếu JWT_SECRET trong file .env (xem .env.example)}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      H2_CONSOLE_ENABLED: "false"
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+      # AI không bắt buộc: AI_API_KEY trống → tắt AI, app vẫn chạy bình thường
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-gemini-3.5-flash-lite}
+      AI_MAX_REQUESTS_PER_HOUR: ${AI_MAX_REQUESTS_PER_HOUR:-20}
+      AI_MAX_REQUESTS_PER_DAY: ${AI_MAX_REQUESTS_PER_DAY:-200}
+
+volumes:
+  mysql-data:
