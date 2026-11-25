@@ -46,8 +46,6 @@
 - **Hạ tầng & Tài liệu:** Swagger / OpenAPI 3 UI, Flyway Database Migration, DataSeeder dữ liệu mẫu, Docker Compose và GitHub Actions CI.
 
 ### Chưa hoàn thành / Hướng phát triển tiếp
-- **Real-time Collaboration (WebSocket):** Hiện tại đồng bộ qua REST API; dự kiến bổ sung WebSocket/STOMP để đồng bộ tức thì giữa nhiều thành viên trong nhóm.
-- **Tệp đính kèm (File Attachments):** Chưa triển khai upload file tài liệu/hình ảnh vào task (dự kiến tích hợp S3/MinIO).
 - **Deploy Cloud:** Đã đóng gói hoàn chỉnh qua Docker Compose chạy local, chưa cấu hình deploy lên cloud server thực tế.
 
 ---
