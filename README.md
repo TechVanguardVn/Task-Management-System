@@ -236,5 +236,5 @@ task-management-system/
 
 - **Họ và tên**: Lê Hữu Văn
 - **GitHub**: [@vanlh25](https://github.com/vanlh25)
-- **Email**: hữu văn 2005 vn @ gmail.com
+- **Email**: `huuvan2005vn@gmail.com`
 - **Branch nộp bài**: `lehuuvan-interndev`
