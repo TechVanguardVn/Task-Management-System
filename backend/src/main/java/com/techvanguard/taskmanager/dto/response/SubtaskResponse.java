@@ -1,5 +1,6 @@
 package com.techvanguard.taskmanager.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +21,9 @@ public class SubtaskResponse {
 
     private Long id;
     private String title;
+
+    @JsonProperty("isCompleted")
     private boolean isCompleted;
+
     private LocalDateTime createdAt;
 }

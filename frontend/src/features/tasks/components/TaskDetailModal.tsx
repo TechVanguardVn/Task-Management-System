@@ -166,38 +166,41 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 
             {/* Danh sách các subtask */}
             <div className="space-y-2 mb-3 max-h-48 overflow-y-auto pr-1">
-              {task.subtasks.map((st) => (
-                <div
-                  key={st.id}
-                  className="flex items-center justify-between text-xs p-2.5 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-colors"
-                >
-                  <button
-                    onClick={() => handleToggleSubtask(st.id)}
-                    className="flex items-center gap-2.5 text-left flex-1 min-w-0"
+              {task.subtasks.map((st) => {
+                const isCompleted = Boolean(st.isCompleted ?? st.completed);
+                return (
+                  <div
+                    key={st.id}
+                    className="flex items-center justify-between text-xs p-2.5 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-colors"
                   >
-                    {st.isCompleted ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    ) : (
-                      <Circle className="w-4 h-4 text-gray-300 dark:text-zinc-600 shrink-0" />
-                    )}
-                    <span
-                      className={`truncate ${
-                        st.isCompleted ? 'line-through text-gray-400 dark:text-zinc-500' : 'text-gray-800 dark:text-zinc-200'
-                      }`}
+                    <button
+                      onClick={() => handleToggleSubtask(st.id)}
+                      className="flex items-center gap-2.5 text-left flex-1 min-w-0"
                     >
-                      {st.title}
-                    </span>
-                  </button>
+                      {isCompleted ? (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      ) : (
+                        <Circle className="w-4 h-4 text-gray-300 dark:text-zinc-600 shrink-0" />
+                      )}
+                      <span
+                        className={`truncate ${
+                          isCompleted ? 'line-through text-gray-400 dark:text-zinc-500' : 'text-gray-800 dark:text-zinc-200'
+                        }`}
+                      >
+                        {st.title}
+                      </span>
+                    </button>
 
-                  <button
-                    onClick={() => handleDeleteSubtask(st.id)}
-                    className="text-gray-400 hover:text-rose-500 p-1 transition-colors"
-                    title="Xóa đầu việc con"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              ))}
+                    <button
+                      onClick={() => handleDeleteSubtask(st.id)}
+                      className="text-gray-400 hover:text-rose-500 p-1 transition-colors"
+                      title="Xóa đầu việc con"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Thêm nhanh subtask */}

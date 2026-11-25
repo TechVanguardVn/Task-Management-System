@@ -21,7 +21,8 @@ export interface TaskResponse {
 export interface SubtaskResponse {
   id: number;
   title: string;
-  isCompleted: boolean;
+  isCompleted?: boolean;
+  completed?: boolean;
   createdAt: string;
 }
 
