@@ -79,7 +79,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onOpenCreateTaskMo
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-zinc-100">Bảng điều khiển Tổng quan</h1>
           <p className="text-xs text-gray-500 dark:text-zinc-400 mt-1">
-            Hiệu suất công việc thời gian thực (được tối ưu hóa bằng Redis Cache)
+            Hiệu suất công việc thời gian thực
           </p>
         </div>
 

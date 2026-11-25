@@ -54,7 +54,7 @@ export const KanbanPage: React.FC = () => {
       <div className="mb-6">
         <h1 className="text-xl font-bold text-gray-900 dark:text-zinc-100">Bảng Kanban Trực Quan</h1>
         <p className="text-xs text-gray-500 dark:text-zinc-400 mt-1">
-          Kéo thả thẻ công việc giữa các cột để cập nhật trạng thái thời gian thực với phản hồi Optimistic UI
+          Kéo thả thẻ công việc giữa các cột để cập nhật trạng thái thời gian thực
         </p>
       </div>
 
